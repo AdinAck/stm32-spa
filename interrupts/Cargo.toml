@@ -1,8 +1,11 @@
 [package]
-name = "g4-interrupts"
+name = "interrupts"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 proto-hal = { path = "/Users/adinack/Projects/proto-hal/proto-hal" }
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
+
+[features]
+g4 = []

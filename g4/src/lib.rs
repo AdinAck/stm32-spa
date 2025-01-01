@@ -3,4 +3,4 @@
 pub mod common;
 pub mod core;
 
-pub use g4_interrupts::interrupt;
+pub use interrupts::g4::interrupt;

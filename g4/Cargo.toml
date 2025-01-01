@@ -10,7 +10,7 @@ cordic = []
 [dependencies]
 proto-hal = { path = "/Users/adinack/Projects/proto-hal/proto-hal" }
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
-g4-interrupts = { path = "../g4-interrupts" }
+interrupts = { path = "../interrupts", features = ["g4"] }
 
 [dev-dependencies]
 defmt-test = "0.3.2"
@@ -27,7 +27,7 @@ fixed = "1.28.0"
 
 [build-dependencies]
 proto-hal-build = { path = "/Users/adinack/Projects/proto-hal/proto-hal-build" }
-g4-interrupts = { path = "../g4-interrupts" }
+interrupts = { path = "../interrupts", features = ["g4"] }
 
 [lib]
 test = false

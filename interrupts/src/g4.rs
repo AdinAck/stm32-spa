@@ -1,5 +1,3 @@
-#![no_std]
-
 use proto_hal::macros::interrupts;
 
 #[interrupts]
