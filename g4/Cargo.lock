@@ -260,6 +260,7 @@ dependencies = [
  "panic-probe",
  "proto-hal",
  "proto-hal-build",
+ "thiserror",
 ]
 
 [[package]]

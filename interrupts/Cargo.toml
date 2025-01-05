@@ -8,4 +8,7 @@ proto-hal = { path = "/Users/adinack/Projects/proto-hal/proto-hal" }
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
 
 [features]
-g4 = []
+g431 = []
+g441 = []
+g474 = []
+g484 = []
