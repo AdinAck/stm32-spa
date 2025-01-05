@@ -3,12 +3,12 @@ name = "interrupts"
 version = "0.1.0"
 edition = "2021"
 
-[dependencies]
-proto-hal = { git = "https://github.com/adinack/proto-hal" }
-cortex-m-rt = { version = "0.7.3", features = ["device"] }
-
 [features]
 g431 = []
 g441 = []
 g474 = []
 g484 = []
+
+[dependencies]
+proto-hal = { git = "https://github.com/adinack/proto-hal" }
+cortex-m-rt = { version = "0.7.3", features = ["device"] }
