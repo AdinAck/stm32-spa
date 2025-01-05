@@ -296,6 +296,7 @@ checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
 [[package]]
 name = "macros"
 version = "0.1.0"
+source = "git+https://github.com/adinack/proto-hal#b1102e89f6e17b0c22a3f4bb3a19822b5ff5da2e"
 dependencies = [
  "Inflector",
  "darling",
@@ -370,6 +371,7 @@ dependencies = [
 [[package]]
 name = "proto-hal"
 version = "0.1.0"
+source = "git+https://github.com/adinack/proto-hal#b1102e89f6e17b0c22a3f4bb3a19822b5ff5da2e"
 dependencies = [
  "arbitrary-int",
  "macros",
@@ -378,6 +380,7 @@ dependencies = [
 [[package]]
 name = "proto-hal-build"
 version = "0.1.0"
+source = "git+https://github.com/adinack/proto-hal#b1102e89f6e17b0c22a3f4bb3a19822b5ff5da2e"
 
 [[package]]
 name = "quote"
