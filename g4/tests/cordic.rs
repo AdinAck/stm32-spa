@@ -8,20 +8,17 @@ use panic_probe as _;
 mod tests {
     use defmt::assert_eq;
     use fixed::types::I1F31;
-    use g4::common::{cordic, rcc};
+    use g4::common::{
+        cordic,
+        rcc::{self, ahb1enr::cordicen::State},
+    };
 
     #[test]
     fn sqrt() {
         let rcc: rcc::Reset = unsafe { core::mem::transmute(()) };
         let cordic: cordic::Reset = unsafe { core::mem::transmute(()) };
 
-        let cordicen = rcc
-            .ahb1enr
-            .build_state()
-            .cordicen()
-            .enabled()
-            .finish()
-            .cordicen;
+        let cordicen = rcc.ahb1enr.cordicen.into_enabled();
 
         cortex_m::asm::delay(1);
 
