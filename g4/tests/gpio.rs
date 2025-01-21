@@ -27,7 +27,7 @@ mod tests {
 
         cortex_m::asm::delay(1);
 
-        assert!(gpioa.idr.read(|r| r.id5()));
-        assert!(!gpioa.idr.read(|r| r.id4()));
+        assert!(gpioa.idr.read(|r| r.id5().is_high()));
+        assert!(gpioa.idr.read(|r| r.id4().is_low()));
     }
 }

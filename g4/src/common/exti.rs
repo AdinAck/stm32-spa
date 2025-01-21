@@ -4,10 +4,10 @@ use proto_hal::macros::block;
 mod exti {
     #[schema(width = 1)]
     mod mask {
-        #[state(bits = 0)]
+        #[variant(bits = 0)]
         struct Masked;
 
-        #[state(bits = 1)]
+        #[variant(bits = 1)]
         struct Unmasked;
     }
 
@@ -25,10 +25,10 @@ mod exti {
 
     #[schema(width = 1)]
     mod enable {
-        #[state(bits = 0)]
+        #[variant(bits = 0)]
         struct Disabled;
 
-        #[state(bits = 1)]
+        #[variant(bits = 1)]
         struct Enabled;
     }
 

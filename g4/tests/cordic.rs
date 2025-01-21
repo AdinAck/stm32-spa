@@ -6,7 +6,7 @@ use panic_probe as _;
 
 #[defmt_test::tests]
 mod tests {
-    use defmt::assert_eq;
+    use defmt::{assert, assert_eq};
     use fixed::types::I1F31;
     use g4::common::{
         cordic,
@@ -25,6 +25,8 @@ mod tests {
         let cordic = cordic
             .attach(cordicen.into())
             .csr(|state| state.func().sqrt());
+
+        assert!(cordic.csr.read(|r| r.rrdy().is_no_data()));
 
         cordic
             .wdata

@@ -4,17 +4,17 @@ use proto_hal::macros::block;
 mod syscfg {
     #[schema(width = 4, auto_increment)]
     mod port {
-        #[state]
+        #[variant]
         struct PA;
-        #[state]
+        #[variant]
         struct PB;
-        #[state]
+        #[variant]
         struct PC;
-        #[state]
+        #[variant]
         struct PD;
-        #[state]
+        #[variant]
         struct PE;
-        #[state]
+        #[variant]
         struct PF;
     }
 

@@ -10,13 +10,13 @@ pub mod gpioa {
     mod moder {
         #[schema(width = 2, auto_increment)]
         mod mode {
-            #[state]
+            #[variant]
             struct Input;
-            #[state]
+            #[variant]
             struct Output;
-            #[state]
+            #[variant]
             struct Alternate;
-            #[state]
+            #[variant]
             struct Analog;
         }
 
@@ -37,9 +37,9 @@ pub mod gpioa {
     mod otyper {
         #[schema(width = 1)]
         mod otype {
-            #[state(bits = 0)]
+            #[variant(bits = 0)]
             struct PushPull;
-            #[state(bits = 1)]
+            #[variant(bits = 1)]
             struct OpenDrain;
         }
 
@@ -51,13 +51,13 @@ pub mod gpioa {
     mod ospeedr {
         #[schema(width = 2, auto_increment)]
         mod ospeed {
-            #[state]
+            #[variant]
             struct Low;
-            #[state]
+            #[variant]
             struct Medium;
-            #[state]
+            #[variant]
             struct High;
-            #[state]
+            #[variant]
             struct VeryHigh;
         }
 
@@ -78,11 +78,11 @@ pub mod gpioa {
     mod pupdr {
         #[schema(width = 2, auto_increment)]
         mod pupd {
-            #[state]
+            #[variant]
             struct None;
-            #[state]
+            #[variant]
             struct PullUp;
-            #[state]
+            #[variant]
             struct PullDown;
         }
 
@@ -101,16 +101,16 @@ pub mod gpioa {
 
     #[schema(width = 1)]
     mod level {
-        #[state(bits = 0)]
+        #[variant(bits = 0)]
         struct Low;
-        #[state(bits = 1)]
+        #[variant(bits = 1)]
         struct High;
     }
 
-    #[register(schema = level, read, reset = Low)]
+    #[register(schema = level, read)]
     mod idr {
         // since this is read only and is not registered under any effects,
-        // this should be dynamic.
+        // this is unresolvable
         #[field_array(offset = 0, range = ..16)]
         mod idX {}
     }
@@ -123,49 +123,25 @@ pub mod gpioa {
 
     // this could probably be
     // stateful
-    #[register(width = 1, write, reset = 0, auto_increment)]
+    #[register(width = 1, write, auto_increment)]
     mod bsrr {
         #[field_array(range = ..16)]
-        mod bsX {}
+        mod bsX {
+            #[variant(bits = 1)]
+            struct Reset;
+        }
 
         #[field_array(range = ..16)]
-        mod brX {}
+        mod brX {
+            #[variant(bits = 1)]
+            struct Set;
+        }
     }
 
     #[schema(width = 4, auto_increment)]
     mod afr {
-        #[state]
-        struct AF0;
-        #[state]
-        struct AF1;
-        #[state]
-        struct AF2;
-        #[state]
-        struct AF3;
-        #[state]
-        struct AF4;
-        #[state]
-        struct AF5;
-        #[state]
-        struct AF6;
-        #[state]
-        struct AF7;
-        #[state]
-        struct AF8;
-        #[state]
-        struct AF9;
-        #[state]
-        struct AF10;
-        #[state]
-        struct AF11;
-        #[state]
-        struct AF12;
-        #[state]
-        struct AF13;
-        #[state]
-        struct AF14;
-        #[state]
-        struct AF15;
+        #[variant_array(range = ..16)]
+        struct AFX;
     }
 
     #[register(offset = 0x20, schema = afr, read, write, reset = AF0)]
@@ -180,10 +156,13 @@ pub mod gpioa {
         mod afselX {}
     }
 
-    #[register(write, reset = 0)]
+    #[register(write)]
     mod brr {
         #[field_array(offset = 0, range = ..16, width = 1)]
-        mod brX {}
+        mod brX {
+            #[variant(bits = 1)]
+            struct Reset;
+        }
     }
 }
 
@@ -197,178 +176,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Alternate;
-//             #[state]
+//             #[variant]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Alternate;
-//             #[state]
+//             #[variant]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -377,114 +356,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -493,178 +472,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -673,146 +652,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state]
+//             #[variant]
 //             struct None;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -964,282 +943,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -1248,282 +1227,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -1575,178 +1554,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -1755,114 +1734,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -1871,178 +1850,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -2051,146 +2030,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -2342,282 +2321,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -2626,282 +2605,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -2953,178 +2932,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -3133,114 +3112,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -3249,178 +3228,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -3429,146 +3408,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -3720,282 +3699,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -4004,282 +3983,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -4331,178 +4310,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -4511,114 +4490,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -4627,178 +4606,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -4807,146 +4786,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -5098,282 +5077,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -5382,282 +5361,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -5709,178 +5688,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -5889,114 +5868,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -6005,178 +5984,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -6185,146 +6164,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -6476,282 +6455,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -6760,282 +6739,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -7087,178 +7066,178 @@ pub mod gpioa {
 //     mod moder {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode0 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode1 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode2 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode3 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode4 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode5 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode6 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode7 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode8 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode9 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode10 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode11 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode12 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode13 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode14 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod mode15 {
-//             #[state]
+//             #[variant]
 //             struct Input;
-//             #[state]
+//             #[variant]
 //             struct Output;
-//             #[state]
+//             #[variant]
 //             struct Alternate;
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Analog;
 //         }
 //     }
@@ -7267,114 +7246,114 @@ pub mod gpioa {
 //     mod otyper {
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //         #[field(width = 1, read, write, auto_increment)]
 //         mod ot15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct PushPull;
-//             #[state]
+//             #[variant]
 //             struct OpenDrain;
 //         }
 //     }
@@ -7383,178 +7362,178 @@ pub mod gpioa {
 //     mod ospeedr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod ospeed15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct Low;
-//             #[state]
+//             #[variant]
 //             struct Medium;
-//             #[state]
+//             #[variant]
 //             struct High;
-//             #[state]
+//             #[variant]
 //             struct VeryHigh;
 //         }
 //     }
@@ -7563,146 +7542,146 @@ pub mod gpioa {
 //     mod pupdr {
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //         #[field(width = 2, read, write, auto_increment)]
 //         mod pupd15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct None;
-//             #[state]
+//             #[variant]
 //             struct PullUp;
-//             #[state]
+//             #[variant]
 //             struct PullDown;
 //         }
 //     }
@@ -7854,282 +7833,282 @@ pub mod gpioa {
 //     mod afrl {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel0 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel1 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel2 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel3 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel4 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel5 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel6 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel7 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
@@ -8138,282 +8117,282 @@ pub mod gpioa {
 //     mod afrh {
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel8 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel9 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel10 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel11 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel12 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel13 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel14 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //         #[field(width = 4, read, write, auto_increment)]
 //         mod afsel15 {
-//             #[state(reset)]
+//             #[variant(reset)]
 //             struct AF0;
-//             #[state]
+//             #[variant]
 //             struct AF1;
-//             #[state]
+//             #[variant]
 //             struct AF2;
-//             #[state]
+//             #[variant]
 //             struct AF3;
-//             #[state]
+//             #[variant]
 //             struct AF4;
-//             #[state]
+//             #[variant]
 //             struct AF5;
-//             #[state]
+//             #[variant]
 //             struct AF6;
-//             #[state]
+//             #[variant]
 //             struct AF7;
-//             #[state]
+//             #[variant]
 //             struct AF8;
-//             #[state]
+//             #[variant]
 //             struct AF9;
-//             #[state]
+//             #[variant]
 //             struct AF10;
-//             #[state]
+//             #[variant]
 //             struct AF11;
-//             #[state]
+//             #[variant]
 //             struct AF12;
-//             #[state]
+//             #[variant]
 //             struct AF13;
-//             #[state]
+//             #[variant]
 //             struct AF14;
-//             #[state]
+//             #[variant]
 //             struct AF15;
 //         }
 //     }
