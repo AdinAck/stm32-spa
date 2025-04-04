@@ -5,15 +5,13 @@ edition = "2021"
 
 [features]
 cordic = []
-g431 = ["interrupts/g431"]
-g441 = ["interrupts/g441"]
-g474 = ["interrupts/g474"]
-g484 = ["interrupts/g484"]
+g431 = []
+g441 = []
+g474 = []
+g484 = []
 
 [dependencies]
-proto-hal = { git = "https://github.com/adinack/proto-hal" }
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
-interrupts = { path = "../interrupts" }
 
 [dev-dependencies]
 defmt-test = "0.3.2"
@@ -29,9 +27,9 @@ panic-probe = { version = "0.3.1", features = ["print-defmt"] }
 fixed = "1.28.0"
 
 [build-dependencies]
-thiserror = "2.0.9"
-proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
-interrupts = { path = "../interrupts" }
+model = { path = "../model" }
+proto-hal-build = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal-build" }
+quote = "1.0.40"
 
 [lib]
 test = false
