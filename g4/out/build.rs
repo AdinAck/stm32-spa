@@ -1,4 +1,3 @@
-use quote::ToTokens as _;
 use std::{env, fs, path::Path};
 
 fn main() {
@@ -7,7 +6,7 @@ fn main() {
 
     match model::generate() {
         Ok(hal) => {
-            fs::write(&dest_path, hal.to_token_stream().to_string()).unwrap();
+            fs::write(&dest_path, hal.render()).unwrap();
         }
         Err(_diagnostics) => {
             println!("cargo::error=HAL generation failed. Refer to the model crate for details.");
