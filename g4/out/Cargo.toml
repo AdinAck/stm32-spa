@@ -12,6 +12,7 @@ g484 = []
 
 [dependencies]
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
+proto-hal = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal" }
 
 [dev-dependencies]
 defmt-test = "0.3.2"
@@ -29,7 +30,6 @@ fixed = "1.28.0"
 [build-dependencies]
 model = { path = "../model" }
 proto-hal-build = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal-build" }
-quote = "1.0.40"
 
 [lib]
 test = false
