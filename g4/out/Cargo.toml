@@ -1,7 +1,7 @@
 [package]
 name = "g4"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [features]
 cordic = []
@@ -12,7 +12,7 @@ g484 = []
 
 [dependencies]
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
-proto-hal = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal" }
+proto-hal = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
 
 [dev-dependencies]
 defmt-test = "0.3.2"
@@ -29,7 +29,7 @@ fixed = "1.28.0"
 
 [build-dependencies]
 model = { path = "../model" }
-proto-hal-build = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal-build" }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
 
 [lib]
 test = false
