@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-cordic = []
 g431 = []
 g441 = []
 g474 = []
 g484 = []
 
 [dependencies]
-cortex-m-rt = { version = "0.7.3", features = ["device"] }
+# cortex-m-rt = { version = "0.7.3", features = ["device"] }
+cortex-m-rt = { version = "0.7.3" }
 proto-hal = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
 
 [dev-dependencies]
@@ -46,7 +46,6 @@ harness = false
 [[test]]
 name = "cordic"
 harness = false
-required-features = ["cordic"]
 
 [profile.dev]
 debug = true

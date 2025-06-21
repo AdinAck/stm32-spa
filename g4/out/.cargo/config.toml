@@ -1,5 +1,5 @@
 [target.thumbv7em-none-eabi]
-runner = 'probe-rs run --chip STM32G431RBIx'
+runner = 'probe-rs run --chip STM32G474RE'
 
 rustflags = [
     "-C",

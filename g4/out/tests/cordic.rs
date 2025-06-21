@@ -8,31 +8,31 @@ use panic_probe as _;
 mod tests {
     use defmt::{assert, assert_eq};
     use fixed::types::I1F31;
-    use g4::common::{
-        cordic,
-        rcc::{self, ahb1enr::cordicen::State},
-    };
+    use g4::{cordic, rcc};
 
     #[test]
     fn sqrt() {
-        let rcc: rcc::Reset = unsafe { core::mem::transmute(()) };
-        let cordic: cordic::Reset = unsafe { core::mem::transmute(()) };
+        let p = unsafe { g4::peripherals() };
 
-        let cordicen = rcc.ahb1enr.cordicen.into_enabled();
+        let rcc::ahb1enr::States { cordicen, .. } =
+            rcc::ahb1enr::transition(|reg| reg.cordicen(p.rcc.ahb1enr.cordicen).enabled());
+        let cordic = p.cordic.unmask(cordicen);
 
-        cortex_m::asm::delay(1);
+        cordic::csr::transition(|reg| {
+            reg.func(cordic.csr.func)
+                .sqrt()
+                .scale(cordic.csr.scale)
+                .preserve()
+        });
 
-        let cordic = cordic
-            .attach(cordicen.into())
-            .csr(|state| state.func().sqrt());
+        cortex_m::asm::delay(2);
 
-        assert!(cordic.csr.read(|r| r.rrdy().is_no_data()));
+        assert!(cordic::csr::read().rrdy().is_no_data());
 
-        cordic
-            .wdata
-            .write(|w| w.arg(I1F31::from_num(0.25).to_bits() as _));
+        cordic::wdata::write(|w| w.arg(I1F31::from_num(0.25).to_bits() as u32));
+
         assert_eq!(
-            I1F31::from_bits(cordic.rdata.read(|r| r.res()) as _).to_num::<f32>(),
+            I1F31::from_bits(cordic::rdata::read().res() as _).to_num::<f32>(),
             0.4999994
         );
     }
