@@ -14,7 +14,7 @@ interrupts = []
 
 [dependencies]
 cortex-m-rt = { version = "0.7.3", features = ["device"] }
-proto-hal = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
+proto-hal = { git = "https://github.com/adinack/proto-hal", branch = "main" }
 
 [dev-dependencies]
 defmt-test = "0.3.2"
@@ -31,7 +31,7 @@ fixed = "1.28.0"
 
 [build-dependencies]
 model = { path = "../model" }
-proto-hal-build = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal", branch = "main" }
 
 [lib]
 test = false
