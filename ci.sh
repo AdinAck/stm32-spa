@@ -2,20 +2,18 @@
 
 set -euxo pipefail
 
-TARGETS=("thumbv6m-none-eabi" "thumbv7em-none-eabi" "thumbv7em-none-eabihf")
+cd g4/model
 
-# workspaces don't work with no_std deployments
-CRATES=("g4" "interrupts")
+cargo r
+cargo clippy -- --deny warnings
 
-for CRATE in "${CRATES[@]}"; do
-    cd "$CRATE"
+cd ../out
 
-    for TARGET in "${TARGETS[@]}"; do
-        rustup target add "$TARGET"
-        cargo build --all-features --target "$TARGET"
-        cargo build --all-features --tests --target "$TARGET"
-        cargo clippy --all-features -- --deny warnings
-    done
+VARIANTS=("g431" "g441" "g474" "g484")
 
-    cd ..
+for VARIANT in "${VARIANTS[@]}"; do
+    cargo build --features "$VARIANT"
+    cargo clippy --features "$VARIANT" -- --deny warnings
 done
+
+# all tests are HIL
