@@ -1,4 +1,14 @@
+use model::DeviceVariant;
+
 fn main() {
     env_logger::init();
-    proto_hal_build::codegen::validate(model::generate);
+    for variant in [
+        DeviceVariant::G431,
+        DeviceVariant::G441,
+        DeviceVariant::G474,
+        DeviceVariant::G484,
+    ] {
+        println!("=== Variant: {variant:?} ===");
+        proto_hal_build::codegen::validate(|| model::generate(variant));
+    }
 }

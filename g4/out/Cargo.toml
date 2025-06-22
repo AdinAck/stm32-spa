@@ -4,14 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
+default = ["interrupts"]
 g431 = []
 g441 = []
 g474 = []
 g484 = []
 
+interrupts = []
+
 [dependencies]
-# cortex-m-rt = { version = "0.7.3", features = ["device"] }
-cortex-m-rt = { version = "0.7.3" }
+cortex-m-rt = { version = "0.7.3", features = ["device"] }
 proto-hal = { git = "https://github.com/adinack/proto-hal", branch = "overhaul2" }
 
 [dev-dependencies]
