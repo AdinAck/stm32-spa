@@ -29,10 +29,12 @@ mod tests {
 
         assert!(cordic::csr::read().rrdy().is_no_data());
 
-        cordic::wdata::write(|w| w.arg(I1F31::from_num(0.25).to_bits() as u32));
+        cordic::wdata::write(|w| {
+            w.arg(&cordic.csr.argsize, I1F31::from_num(0.25).to_bits() as u32)
+        });
 
         assert_eq!(
-            I1F31::from_bits(cordic::rdata::read().res() as _).to_num::<f32>(),
+            I1F31::from_bits(cordic::rdata::read().res(&cordic.csr.ressize) as _).to_num::<f32>(),
             0.4999994
         );
     }
