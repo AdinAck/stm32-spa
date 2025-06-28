@@ -15,5 +15,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Install Deps
+        run: cargo install flip-link
       - name: ci
         run: ./ci.sh
