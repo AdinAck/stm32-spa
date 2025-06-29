@@ -6,15 +6,15 @@ use proto_hal_build::ir::{
     },
 };
 
-pub fn generate() -> Field {
+pub fn generate(i: u8) -> Field {
     Field::new(
-        "cordicen",
-        3,
+        format!("ot{i}"),
+        i,
         1,
         Access::read_write(Numericity::enumerated([
-            Variant::new("Disabled", 0),
-            Variant::new("Enabled", 1),
+            Variant::new("PushPull", 0),
+            Variant::new("OpenDrain", 1),
         ])),
     )
-    .reset("Disabled")
+    .reset("PushPull")
 }
