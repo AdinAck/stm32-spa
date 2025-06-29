@@ -1,6 +1,8 @@
 pub mod cordic;
+pub mod exti;
 pub mod gpio;
 pub mod rcc;
+pub mod syscfg;
 
 use proto_hal_build::ir::{
     structures::{hal::Hal, interrupts::Interrupt},
@@ -32,6 +34,8 @@ pub fn generate(variant: DeviceVariant) -> Result<Hal, Diagnostics> {
         gpio::generate(gpio::Instance::D),
         gpio::generate(gpio::Instance::E),
         gpio::generate(gpio::Instance::F),
+        syscfg::generate(),
+        exti::generate(),
         cordic::generate(),
     ])
     .interrupts([

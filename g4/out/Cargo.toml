@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["interrupts"]
+default = ["interrupts", "g474"]
 g431 = []
 g441 = []
 g474 = []
@@ -28,6 +28,9 @@ defmt = { version = "0.3.6" }
 defmt-rtt = { version = "0.4.0" }
 panic-probe = { version = "0.3.1", features = ["print-defmt"] }
 fixed = "1.28.0"
+cortex-m-spa = { git = "https://github.com/adinack/cortex-m-spa", branch = "main", features = [
+    "m4",
+] }
 
 [build-dependencies]
 model = { path = "../model" }
