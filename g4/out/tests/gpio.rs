@@ -23,7 +23,13 @@ mod tests {
 
         cortex_m::asm::delay(2);
 
-        assert!(gpioa::idr::read().id5().is_high());
-        assert!(gpioa::idr::read().id4().is_low());
+        assert!(
+            gpioa::idr::read().id5().is_high(),
+            "expected controlled pin level to be high"
+        );
+        assert!(
+            gpioa::idr::read().id4().is_low(),
+            "expected non-controlled pin level to be low"
+        );
     }
 }

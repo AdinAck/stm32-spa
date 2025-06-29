@@ -27,7 +27,10 @@ mod tests {
 
         cortex_m::asm::delay(2);
 
-        assert!(cordic::csr::read().rrdy().is_no_data());
+        assert!(
+            cordic::csr::read().rrdy().is_no_data(),
+            "expected data to noy be ready before use"
+        );
 
         cordic::wdata::write(|w| {
             w.arg(&cordic.csr.argsize, I1F31::from_num(0.25).to_bits() as u32)
@@ -35,7 +38,8 @@ mod tests {
 
         assert_eq!(
             I1F31::from_bits(cordic::rdata::read().res(&cordic.csr.ressize) as _).to_num::<f32>(),
-            0.4999994
+            0.4999994,
+            "expected sqrt(0.25) to be roughly 0.5"
         );
     }
 }
