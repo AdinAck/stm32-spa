@@ -1,6 +1,6 @@
-mod csr;
-mod rdata;
-mod wdata;
+pub mod csr;
+pub mod rdata;
+pub mod wdata;
 
 use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
 

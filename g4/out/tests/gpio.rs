@@ -7,27 +7,23 @@ use panic_probe as _;
 #[defmt_test::tests]
 mod tests {
     use defmt::assert;
-    use g4::common::{
-        gpio::gpioa,
-        rcc::{self, ahb2enr::gpioaen::State},
-    };
+    use g4::{gpioa, rcc};
 
     #[test]
     fn output_input() {
-        let rcc: rcc::Reset = unsafe { core::mem::transmute(()) };
-        let gpioa: gpioa::Reset = unsafe { core::mem::transmute(()) };
+        let p = unsafe { g4::peripherals() };
 
-        let gpioaen = rcc.ahb2enr.gpioaen.into_enabled();
+        let rcc::ahb2enr::States { gpioaen, .. } =
+            rcc::ahb2enr::transition(|reg| reg.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
 
-        let gpioa = gpioa
-            .attach(gpioaen.into())
-            .moder(|state| state.mode5().output());
+        let gpioa = p.gpioa.unmask(gpioaen);
 
-        let gpioa = gpioa.odr(|state| state.od5().high());
+        gpioa::moder::transition(|reg| reg.mode5(gpioa.moder.mode5).output());
+        gpioa::odr::transition(|reg| reg.od5(gpioa.odr.od5).high());
 
-        cortex_m::asm::delay(1);
+        cortex_m::asm::delay(2);
 
-        assert!(gpioa.idr.read(|r| r.id5().is_high()));
-        assert!(gpioa.idr.read(|r| r.id4().is_low()));
+        assert!(gpioa::idr::read().id5().is_high());
+        assert!(gpioa::idr::read().id4().is_low());
     }
 }

@@ -325,7 +325,7 @@ dependencies = [
 [[package]]
 name = "ir"
 version = "0.1.0"
-source = "git+https://github.com/adinack/proto-hal?branch=main#e071e242a055f863acb2eb213a58cccf54841ad5"
+source = "git+https://github.com/adinack/proto-hal?branch=main#a9ca6f2310d803998921bb72e0d72b331fc6ccf5"
 dependencies = [
  "Inflector",
  "colored",
@@ -490,7 +490,7 @@ checksum = "302c525e16613efd9c9a684c096503d9dc662f7feb6b6c40e59303b4e2c4c113"
 [[package]]
 name = "proto-hal"
 version = "0.1.0"
-source = "git+https://github.com/adinack/proto-hal?branch=main#e071e242a055f863acb2eb213a58cccf54841ad5"
+source = "git+https://github.com/adinack/proto-hal?branch=main#a9ca6f2310d803998921bb72e0d72b331fc6ccf5"
 dependencies = [
  "arbitrary-int",
 ]
@@ -498,7 +498,7 @@ dependencies = [
 [[package]]
 name = "proto-hal-build"
 version = "0.1.0"
-source = "git+https://github.com/adinack/proto-hal?branch=main#e071e242a055f863acb2eb213a58cccf54841ad5"
+source = "git+https://github.com/adinack/proto-hal?branch=main#a9ca6f2310d803998921bb72e0d72b331fc6ccf5"
 dependencies = [
  "colored",
  "ir",

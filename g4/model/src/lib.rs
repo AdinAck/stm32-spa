@@ -1,10 +1,11 @@
+pub mod cordic;
+pub mod gpio;
+pub mod rcc;
+
 use proto_hal_build::ir::{
     structures::{hal::Hal, interrupts::Interrupt},
     utils::diagnostic::Diagnostics,
 };
-
-pub mod cordic;
-pub mod rcc;
 
 #[derive(Debug)]
 pub enum DeviceVariant {
@@ -23,7 +24,17 @@ pub fn generate(variant: DeviceVariant) -> Result<Hal, Diagnostics> {
         }
     };
 
-    let hal = Hal::new([rcc::generate(), cordic::generate()]).interrupts([
+    let hal = Hal::new([
+        rcc::generate(),
+        gpio::generate(gpio::Instance::A),
+        gpio::generate(gpio::Instance::B),
+        gpio::generate(gpio::Instance::C),
+        gpio::generate(gpio::Instance::D),
+        gpio::generate(gpio::Instance::E),
+        gpio::generate(gpio::Instance::F),
+        cordic::generate(),
+    ])
+    .interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),
         Interrupt::handler("PVD_PVM").docs(["PVD through EXTI line detection"]),
         Interrupt::handler("RTC_TAMP_CSS_LSE"),
