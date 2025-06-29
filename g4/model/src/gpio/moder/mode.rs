@@ -21,7 +21,7 @@ pub fn generate(i: u8, instance: Instance) -> Field {
         ])),
     )
     .reset(match (instance, i) {
-        (Instance::A, 14 | 15) | (Instance::B, 3 | 4) => "Alternate",
+        (Instance::A, 13 | 14 | 15) | (Instance::B, 3 | 4) => "Alternate",
         _ => "Input",
     })
 }
