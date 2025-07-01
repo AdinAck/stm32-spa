@@ -35,7 +35,7 @@ mod tests {
             exti::rtsr1::write_from_reset_untracked(|w| w);
 
             gpioa::odr::write_from_reset_untracked(|w| w);
-            // gpioa::moder::write_from_reset_untracked(|w| w); // TODO: investigate reset validity
+            gpioa::moder::write_from_reset_untracked(|w| w);
 
             rcc::ahb2enr::write_from_reset_untracked(|w| w);
         }
