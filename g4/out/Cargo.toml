@@ -52,9 +52,12 @@ harness = false
 name = "cordic"
 harness = false
 
+[[test]]
+name = "crc"
+harness = false
+
 [profile.dev]
 debug = true
-lto = true
 opt-level = "z"
 incremental = true
 

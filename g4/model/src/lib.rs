@@ -1,4 +1,5 @@
 pub mod cordic;
+pub mod crc;
 pub mod exti;
 pub mod gpio;
 pub mod rcc;
@@ -37,6 +38,7 @@ pub fn generate(variant: DeviceVariant) -> Result<Hal, Diagnostics> {
         syscfg::generate(),
         exti::generate(),
         cordic::generate(),
+        crc::generate(),
     ])
     .interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),
