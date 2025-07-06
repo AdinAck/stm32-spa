@@ -16,7 +16,7 @@ mod tests {
         let rcc::ahb2enr::States { gpioaen, .. } =
             rcc::ahb2enr::transition(|reg| reg.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
 
-        let gpioa = p.gpioa.unmask(gpioaen);
+        let mut gpioa = p.gpioa.unmask(gpioaen);
 
         gpioa::moder::transition(|reg| reg.mode5(gpioa.moder.mode5).output());
         gpioa::odr::transition(|reg| reg.od5(gpioa.odr.od5).high());
@@ -24,11 +24,11 @@ mod tests {
         cortex_m::asm::delay(2);
 
         assert!(
-            gpioa::idr::read().id5().is_high(),
+            gpioa::idr::read().id5(&mut gpioa.idr.id5).is_high(),
             "expected controlled pin level to be high"
         );
         assert!(
-            gpioa::idr::read().id4().is_low(),
+            gpioa::idr::read().id4(&mut gpioa.idr.id4).is_low(),
             "expected non-controlled pin level to be low"
         );
     }
