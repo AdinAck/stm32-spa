@@ -10,16 +10,16 @@ mod tests {
     use g4::{crc, rcc};
 
     #[test]
-    fn start_initial() {
+    fn initial() {
         let p = unsafe { g4::peripherals() };
 
         let rcc::ahb1enr::States { crcen, .. } =
-            rcc::ahb1enr::transition(|reg| reg.crcen(p.rcc.ahb1enr.crcen).enabled());
+            rcc::ahb1enr::modify(|_, w| w.crcen(p.rcc.ahb1enr.crcen).enabled());
 
         cortex_m::asm::delay(2);
 
         let mut crc = p.crc.unmask(crcen);
 
-        assert_eq!(crc::dr::read().dr(&mut crc.dr.dr), 0xffff_ffff);
+        assert_eq!(crc::dr::read().dr(&mut crc.dr.dr), crc.init.init.value());
     }
 }

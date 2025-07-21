@@ -15,11 +15,11 @@ mod tests {
         let p = unsafe { g4::peripherals() };
 
         let rcc::ahb1enr::States { cordicen, .. } =
-            rcc::ahb1enr::transition(|reg| reg.cordicen(p.rcc.ahb1enr.cordicen).enabled());
+            rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
         let mut cordic = p.cordic.unmask(cordicen);
 
-        cordic::csr::transition(|reg| {
-            reg.func(cordic.csr.func)
+        cordic::csr::modify(|_, w| {
+            w.func(cordic.csr.func)
                 .sqrt()
                 .scale(cordic.csr.scale)
                 .preserve()
@@ -32,7 +32,7 @@ mod tests {
             "expected data to noy be ready before use"
         );
 
-        cordic::wdata::write_from_zero(|w| {
+        cordic::wdata::write(|w| {
             w.arg(
                 &mut cordic.wdata.arg,
                 &cordic.csr.argsize,

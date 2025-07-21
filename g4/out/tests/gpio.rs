@@ -14,12 +14,12 @@ mod tests {
         let p = unsafe { g4::peripherals() };
 
         let rcc::ahb2enr::States { gpioaen, .. } =
-            rcc::ahb2enr::transition(|reg| reg.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
+            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
 
         let mut gpioa = p.gpioa.unmask(gpioaen);
 
-        gpioa::moder::transition(|reg| reg.mode5(gpioa.moder.mode5).output());
-        gpioa::odr::transition(|reg| reg.od5(gpioa.odr.od5).high());
+        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
+        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
 
         cortex_m::asm::delay(2);
 
