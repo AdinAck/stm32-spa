@@ -1,0 +1,13 @@
+[package]
+name = "scope"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+probe-rs = "0.29.1"
+rerun = "0.24.0"
+model = { path = "../model" }
+cortex-m-model = { package = "model", git = "https://github.com/adinack/cortex-m-spa", branch = "main", features = [
+    "m4",
+] }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal", branch = "main" }
