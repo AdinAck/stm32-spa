@@ -11,18 +11,15 @@ cargo clippy -- --deny warnings
 cd ../out
 
 VARIANTS=("g431" "g441" "g474" "g484")
-TESTS=("cordic" "gpio")
 
 for VARIANT in "${VARIANTS[@]}"; do
     cargo build --features "$VARIANT"
-    for TEST in "${TESTS[@]}"; do
-        cargo build --test "$TEST" --features "$VARIANT"
-    done
+    cargo build --tests --features "$VARIANT"
+    cargo build --examples --features "$VARIANT"
 
     cargo clippy --features "$VARIANT" -- --deny warnings
-    for TEST in "${TESTS[@]}"; do
-        cargo clippy --test "$TEST" --features "$VARIANT" -- --deny warnings
-    done
+    cargo clippy --tests --features "$VARIANT" -- --deny warnings
+    cargo clippy --examples --features "$VARIANT" -- --deny warnings
 done
 
 # all tests are HIL
