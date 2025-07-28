@@ -49,19 +49,20 @@ mod tests {
     fn gpio_trigger() {
         let p = unsafe { g4::peripherals() };
 
-        let rcc::ahb2enr::States { gpioaen, .. } =
-            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
+        let rcc::ahb2enr::States { gpioaen, .. } = critical_section::with(|cs| {
+            rcc::ahb2enr::modify(cs, |_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled())
+        });
 
         cortex_m::asm::delay(2);
 
         let mut gpioa = p.gpioa.unmask(gpioaen);
-
-        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
-
         let mut exti = p.exti;
 
-        exti::imr1::modify(|_, w| w.im5(exti.imr1.im5).unmasked());
-        exti::rtsr1::modify(|_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        critical_section::with(|cs| {
+            gpioa::moder::modify(cs, |_, w| w.mode5(gpioa.moder.mode5).output());
+            exti::imr1::modify(cs, |_, w| w.im5(exti.imr1.im5).unmasked());
+            exti::rtsr1::modify(cs, |_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        });
 
         cortex_m::asm::delay(2);
 
@@ -70,7 +71,7 @@ mod tests {
             "expected exti interrupt state to start idle"
         );
 
-        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
+        critical_section::with(|cs| gpioa::odr::modify(cs, |_, w| w.od5(gpioa.odr.od5).high()));
 
         cortex_m::asm::delay(2);
 
@@ -93,19 +94,20 @@ mod tests {
 
         nvic::iser1::write(|w| w.setena23(&mut nvic.iser1.setena23).enable());
 
-        let rcc::ahb2enr::States { gpioaen, .. } =
-            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
+        let rcc::ahb2enr::States { gpioaen, .. } = critical_section::with(|cs| {
+            rcc::ahb2enr::modify(cs, |_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled())
+        });
 
         cortex_m::asm::delay(2);
 
         let gpioa = p.gpioa.unmask(gpioaen);
-
-        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
-
         let mut exti = p.exti;
 
-        exti::imr1::modify(|_, w| w.im5(exti.imr1.im5).unmasked());
-        exti::rtsr1::modify(|_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        critical_section::with(|cs| {
+            gpioa::moder::modify(cs, |_, w| w.mode5(gpioa.moder.mode5).output());
+            exti::imr1::modify(cs, |_, w| w.im5(exti.imr1.im5).unmasked());
+            exti::rtsr1::modify(cs, |_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        });
 
         cortex_m::asm::delay(2);
 
@@ -114,7 +116,9 @@ mod tests {
             "expected exti interrupt state to start idle"
         );
 
-        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
+        critical_section::with(|cs| {
+            gpioa::odr::modify(cs, |_, w| w.od5(gpioa.odr.od5).high());
+        });
 
         cortex_m::asm::delay(100); // padding, just in case
 

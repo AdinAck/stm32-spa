@@ -13,8 +13,9 @@ mod tests {
     fn initial() {
         let p = unsafe { g4::peripherals() };
 
-        let rcc::ahb1enr::States { crcen, .. } =
-            rcc::ahb1enr::modify(|_, w| w.crcen(p.rcc.ahb1enr.crcen).enabled());
+        let rcc::ahb1enr::States { crcen, .. } = critical_section::with(|cs| {
+            rcc::ahb1enr::modify(cs, |_, w| w.crcen(p.rcc.ahb1enr.crcen).enabled())
+        });
 
         cortex_m::asm::delay(2);
 

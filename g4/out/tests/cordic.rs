@@ -14,15 +14,18 @@ mod tests {
     fn sqrt() {
         let p = unsafe { g4::peripherals() };
 
-        let rcc::ahb1enr::States { cordicen, .. } =
-            rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
+        let rcc::ahb1enr::States { cordicen, .. } = critical_section::with(|cs| {
+            rcc::ahb1enr::modify(cs, |_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled())
+        });
         let mut cordic = p.cordic.unmask(cordicen);
 
-        cordic::csr::modify(|_, w| {
-            w.func(cordic.csr.func)
-                .sqrt()
-                .scale(cordic.csr.scale)
-                .preserve()
+        critical_section::with(|cs| {
+            cordic::csr::modify(cs, |_, w| {
+                w.func(cordic.csr.func)
+                    .sqrt()
+                    .scale(cordic.csr.scale)
+                    .preserve()
+            })
         });
 
         cortex_m::asm::delay(2);
@@ -32,19 +35,13 @@ mod tests {
             "expected data to noy be ready before use"
         );
 
-        cordic::wdata::write(|w| {
-            w.arg(
-                &mut cordic.wdata.arg,
-                &cordic.csr.argsize,
-                I1F31::from_num(0.25).to_bits() as u32,
-            )
-        });
+        let mut arg = cordic.wdata.arg.unmask(cordic.csr.argsize);
+        let mut res = cordic.rdata.res.unmask(cordic.csr.ressize);
+
+        cordic::wdata::write(|w| w.arg(&mut arg, I1F31::from_num(0.25).to_bits() as u32));
 
         assert_eq!(
-            I1F31::from_bits(
-                cordic::rdata::read().res(&mut cordic.rdata.res, &cordic.csr.ressize) as _
-            )
-            .to_num::<f32>(),
+            I1F31::from_bits(cordic::rdata::read().res(&mut res) as _).to_num::<f32>(),
             0.4999994,
             "expected sqrt(0.25) to be roughly 0.5"
         );

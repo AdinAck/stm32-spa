@@ -8,6 +8,7 @@ use cortex_m_rt::entry;
 use defmt::unwrap;
 use g4::{cordic, rcc};
 use probe_plotter::make_metric;
+use proto_hal::stasis::Freeze as _;
 
 #[entry]
 fn main() -> ! {
@@ -16,25 +17,33 @@ fn main() -> ! {
 
     let p = unsafe { g4::peripherals() };
 
-    let rcc::ahb1enr::States { cordicen, .. } =
-        rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
-    let mut cordic = p.cordic.unmask(cordicen);
+    let rcc::ahb1enr::States { cordicen, .. } = critical_section::with(|cs| {
+        rcc::ahb1enr::modify(cs, |_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled())
+    });
+    let cordic = p.cordic.unmask(cordicen);
 
-    let cordic::csr::States { ressize, .. } =
-        cordic::csr::modify(|_, w| w.ressize(cordic.csr.ressize).q15());
+    let cordic::csr::States { ressize, .. } = critical_section::with(|cs| {
+        cordic::csr::modify(cs, |_, w| w.ressize(cordic.csr.ressize).q15())
+    });
 
     cortex_m::asm::delay(2);
+
+    let mut arg = cordic.wdata.arg.unmask(cordic.csr.argsize);
+    let (_, [res0_ressize_ent, res1_ressize_ent]) = ressize.freeze();
+    let (_, [res0_nres_ent, res1_nres_ent]) = cordic.csr.nres.freeze();
+    let (mut res0, mut res1) = (
+        cordic.rdata.res0.unmask(res0_nres_ent, res0_ressize_ent),
+        cordic.rdata.res1.unmask(res1_nres_ent, res1_ressize_ent),
+    );
 
     let mut i = 0;
 
     loop {
-        cordic::wdata::write(|w| w.arg(&mut cordic.wdata.arg, &cordic.csr.argsize, i));
+        cordic::wdata::write(|w| w.arg(&mut arg, i));
 
-        let cos =
-            cordic::rdata::read().res0(&mut cordic.rdata.res0, &ressize, &cordic.csr.nres) as i16;
+        let cos = cordic::rdata::read().res0(&mut res0) as i16;
 
-        let sin =
-            cordic::rdata::read().res1(&mut cordic.rdata.res1, &ressize, &cordic.csr.nres) as i16;
+        let sin = cordic::rdata::read().res1(&mut res1) as i16;
 
         cos_plot.set(cos);
         sin_plot.set(sin);
