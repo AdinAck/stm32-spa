@@ -31,6 +31,7 @@ fixed = "1.28.0"
 cortex-m-spa = { git = "https://github.com/adinack/cortex-m-spa", branch = "main", features = [
     "m4",
 ] }
+crc = "3.3.0"
 
 # thank you @usbalbin!
 probe-plotter = { git = "https://github.com/usbalbin/probe-plotter", branch = "main" }
