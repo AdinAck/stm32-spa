@@ -4,6 +4,7 @@ pub mod exti;
 pub mod gpio;
 pub mod rcc;
 pub mod syscfg;
+pub mod vrefbuf;
 
 use proto_hal_build::ir::{
     structures::{hal::Hal, interrupts::Interrupt},
@@ -39,6 +40,7 @@ pub fn generate(variant: DeviceVariant) -> Result<Hal, Diagnostics> {
         exti::generate(),
         cordic::generate(),
         crc::generate(),
+        vrefbuf::generate(),
     ])
     .interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),
