@@ -1,6 +1,6 @@
 pub mod exticr;
 
-use proto_hal_build::ir::structures::peripheral::Peripheral;
+use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
 
 pub fn generate() -> Peripheral {
     Peripheral::new(
@@ -13,5 +13,6 @@ pub fn generate() -> Peripheral {
             exticr::generate(exticr::Instance::I4),
         ],
     )
+    .entitlements([Entitlement::to("rcc::apb2enr::syscfgen::Enabled")])
     .docs(["This peripheral is incomplete."])
 }
