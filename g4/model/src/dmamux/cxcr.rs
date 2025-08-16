@@ -1,3 +1,5 @@
+pub mod dmareq;
+
 use proto_hal_build::ir::{
     access::{Access, AccessProperties, ReadWrite},
     structures::{
@@ -13,8 +15,7 @@ pub fn generate(channel: u8) -> Register {
         format!("c{channel}cr"),
         channel as u32 * 4,
         [
-            Field::new("dmareq_id", 0, 7, Access::read_write(Numericity::Numeric))
-                .docs(["DMA request identification"]),
+            dmareq::generate(),
             Field::new(
                 "soie",
                 8,
