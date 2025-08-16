@@ -157,7 +157,7 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
                     Access::ReadWrite(ReadWrite::Asymmetrical {
                         read: write.clone(),
                         write: write.entitlements([Entitlement::to(format!(
-                            "{}::ccr{}::en::Enabled",
+                            "{}::ccr{}::en::Disabled",
                             instance.ident(),
                             channel,
                         ))]),
