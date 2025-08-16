@@ -1,5 +1,7 @@
 pub mod cordic;
 pub mod crc;
+pub mod dma;
+pub mod dmamux;
 pub mod exti;
 pub mod gpio;
 pub mod rcc;
@@ -28,6 +30,11 @@ pub fn generate(variant: DeviceVariant) -> (Hal, Diagnostics) {
         }
     };
 
+    let dma_channels = match variant {
+        DeviceVariant::G431 | DeviceVariant::G441 => 6,
+        DeviceVariant::G474 | DeviceVariant::G484 => 8,
+    };
+
     let hal = Hal::new([
         rcc::generate(),
         gpio::generate(gpio::Instance::A),
@@ -41,6 +48,9 @@ pub fn generate(variant: DeviceVariant) -> (Hal, Diagnostics) {
         cordic::generate(),
         crc::generate(),
         vrefbuf::generate(),
+        dma::generate(dma::Instance::Dma1, dma_channels),
+        dma::generate(dma::Instance::Dma2, dma_channels),
+        dmamux::generate(2, dma_channels),
     ])
     .interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),

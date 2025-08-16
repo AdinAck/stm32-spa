@@ -35,8 +35,8 @@ pub fn generate(instance: Instance) -> Register {
         match instance {
             Instance::AHB1 => vec![
                 en::generate("dma1en", 0),
-                en::generate("dam2en", 1),
-                en::generate("dammux1en", 2),
+                en::generate("dma2en", 1),
+                en::generate("dmamux1en", 2),
                 en::generate("cordicen", 3),
                 en::generate("fmacen", 4),
                 en::generate("flashen", 8).reset("Enabled"),
