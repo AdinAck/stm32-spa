@@ -14,18 +14,15 @@ mod tests {
     fn sqrt() {
         let p = unsafe { g4::peripherals() };
 
-        let rcc::ahb1enr::States { cordicen, .. } = critical_section::with(|cs| {
-            rcc::ahb1enr::modify(cs, |_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled())
-        });
+        let rcc::ahb1enr::States { cordicen, .. } =
+            rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
         let mut cordic = p.cordic.unmask(cordicen);
 
-        critical_section::with(|cs| {
-            cordic::csr::modify(cs, |_, w| {
-                w.func(cordic.csr.func)
-                    .sqrt()
-                    .scale(cordic.csr.scale)
-                    .preserve()
-            })
+        cordic::csr::modify(|_, w| {
+            w.func(cordic.csr.func)
+                .sqrt()
+                .scale(cordic.csr.scale)
+                .preserve()
         });
 
         cortex_m::asm::delay(2);

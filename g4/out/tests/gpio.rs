@@ -13,16 +13,13 @@ mod tests {
     fn output_input() {
         let p = unsafe { g4::peripherals() };
 
-        let rcc::ahb2enr::States { gpioaen, .. } = critical_section::with(|cs| {
-            rcc::ahb2enr::modify(cs, |_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled())
-        });
+        let rcc::ahb2enr::States { gpioaen, .. } =
+            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
 
         let mut gpioa = p.gpioa.unmask(gpioaen);
 
-        critical_section::with(|cs| {
-            gpioa::moder::modify(cs, |_, w| w.mode5(gpioa.moder.mode5).output());
-            gpioa::odr::modify(cs, |_, w| w.od5(gpioa.odr.od5).high());
-        });
+        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
+        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
 
         cortex_m::asm::delay(2);
 

@@ -17,14 +17,12 @@ fn main() -> ! {
 
     let p = unsafe { g4::peripherals() };
 
-    let rcc::ahb1enr::States { cordicen, .. } = critical_section::with(|cs| {
-        rcc::ahb1enr::modify(cs, |_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled())
-    });
+    let rcc::ahb1enr::States { cordicen, .. } =
+        rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
     let cordic = p.cordic.unmask(cordicen);
 
-    let cordic::csr::States { ressize, .. } = critical_section::with(|cs| {
-        cordic::csr::modify(cs, |_, w| w.ressize(cordic.csr.ressize).q15())
-    });
+    let cordic::csr::States { ressize, .. } =
+        cordic::csr::modify(|_, w| w.ressize(cordic.csr.ressize).q15());
 
     cortex_m::asm::delay(2);
 
