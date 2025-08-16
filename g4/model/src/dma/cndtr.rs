@@ -1,5 +1,5 @@
 use proto_hal_build::ir::{
-    access::{Access, AccessProperties, ReadWrite},
+    access::{Access, AccessProperties, HardwareAccess, ReadWrite},
     structures::{entitlement::Entitlement, field::Field, register::Register},
 };
 
@@ -24,7 +24,7 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
                 ))]),
             }),
         )
-        .reset(0)
+        .hardware_access(HardwareAccess::Write)
         .docs(["Number of data to transfer"])],
     )
 }
