@@ -1,5 +1,5 @@
 use proto_hal_build::ir::{
-    access::{Access, ReadWrite},
+    access::{Access, HardwareAccess, ReadWrite},
     structures::{
         entitlement::Entitlement,
         field::{Field, Numericity},
@@ -170,7 +170,9 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
             }),
         )
         .map(|field| {
-            field.reset(0) // reset value of ccr register is 0
+            field
+                .reset(0) // reset value of ccr register is 0
+                .hardware_access(HardwareAccess::ReadOnly)
         }),
     )
 }

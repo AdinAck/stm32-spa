@@ -1,5 +1,5 @@
 use proto_hal_build::ir::{
-    access::{Access, AccessProperties, ReadWrite},
+    access::{Access, AccessProperties, HardwareAccess, ReadWrite},
     structures::{
         entitlement::Entitlement,
         field::{Field, Numericity},
@@ -58,6 +58,7 @@ pub fn generate(channel: u8) -> Register {
                     ))]),
                 }),
             )
+            .hardware_access(HardwareAccess::ReadOnly)
             .docs(["Number of DMA requests to be generated (minus 1)"]),
         ]
         .into_iter()

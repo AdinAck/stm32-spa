@@ -1,7 +1,7 @@
 pub mod dmareq;
 
 use proto_hal_build::ir::{
-    access::{Access, AccessProperties, ReadWrite},
+    access::{Access, AccessProperties, HardwareAccess, ReadWrite},
     structures::{
         entitlement::Entitlement,
         field::{Field, Numericity},
@@ -75,6 +75,10 @@ pub fn generate(channel: u8) -> Register {
                 .docs(["Synchronization identification"]),
         ]
         .into_iter()
-        .map(|field| field.reset(0)), // reset value of cxcr register is 0
+        .map(|field| {
+            field
+                .reset(0) // reset value of cxcr register is 0
+                .hardware_access(HardwareAccess::ReadOnly)
+        }),
     )
 }
