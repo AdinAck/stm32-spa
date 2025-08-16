@@ -1,5 +1,7 @@
 pub mod cordic;
 pub mod crc;
+pub mod dma;
+pub mod dmamux;
 pub mod exti;
 pub mod gpio;
 pub mod rcc;
