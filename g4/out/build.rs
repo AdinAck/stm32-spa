@@ -15,5 +15,8 @@ fn main() -> Result<(), String> {
 
     proto_hal_build::codegen::generate(|| model::generate(variant));
 
+    // prevent recompiling when tests change
+    println!("cargo::rerun-if-changed=../model");
+
     Ok(())
 }
