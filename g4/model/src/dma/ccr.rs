@@ -166,13 +166,11 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
                     field.access
                 };
 
-                field
+                field.hardware_access(HardwareAccess::ReadOnly)
             }),
         )
         .map(|field| {
-            field
-                .reset(0) // reset value of ccr register is 0
-                .hardware_access(HardwareAccess::ReadOnly)
+            field.reset(0) // reset value of ccr register is 0
         }),
     )
 }
