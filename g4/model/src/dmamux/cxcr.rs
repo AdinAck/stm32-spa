@@ -70,15 +70,14 @@ pub fn generate(channel: u8) -> Register {
                     ]),
                 }),
             )
+            .hardware_access(HardwareAccess::ReadOnly)
             .docs(["Number of DMA requests minus 1 to forward"]),
             Field::new("sync_id", 24, 5, Access::read_write(Numericity::Numeric))
                 .docs(["Synchronization identification"]),
         ]
         .into_iter()
         .map(|field| {
-            field
-                .reset(0) // reset value of cxcr register is 0
-                .hardware_access(HardwareAccess::ReadOnly)
+            field.reset(0) // reset value of cxcr register is 0
         }),
     )
 }
