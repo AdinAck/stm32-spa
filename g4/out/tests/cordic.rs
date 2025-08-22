@@ -29,7 +29,7 @@ mod tests {
 
         assert!(
             cordic::csr::read().rrdy(&mut cordic.csr.rrdy).is_no_data(),
-            "expected data to noy be ready before use"
+            "expected data to not be ready before use"
         );
 
         let mut arg = cordic.wdata.arg.unmask(cordic.csr.argsize);
