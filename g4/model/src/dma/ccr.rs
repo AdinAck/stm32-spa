@@ -25,6 +25,7 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
                 Variant::new("Enabled", 1),
             ])),
         )
+        .hardware_access(HardwareAccess::Write)
         .docs(["Channel enable"])]
         .into_iter()
         .chain(
@@ -166,11 +167,10 @@ pub fn generate(instance: super::Instance, channel: u8) -> Register {
                     field.access
                 };
 
-                field.hardware_access(HardwareAccess::ReadOnly)
+                field
+                    .reset(0) // reset value of ccr register is 0
+                    .hardware_access(HardwareAccess::ReadOnly)
             }),
-        )
-        .map(|field| {
-            field.reset(0) // reset value of ccr register is 0
-        }),
+        ),
     )
 }
