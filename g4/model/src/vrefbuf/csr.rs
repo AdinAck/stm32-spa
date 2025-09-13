@@ -16,4 +16,5 @@ pub fn generate() -> Register {
             vrs::generate(),
         ],
     )
+    .reset(0x2)
 }

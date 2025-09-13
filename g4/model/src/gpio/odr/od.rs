@@ -16,5 +16,4 @@ pub fn generate(i: u8) -> Field {
             Variant::new("High", 1),
         ])),
     )
-    .reset("Low")
 }

@@ -43,4 +43,5 @@ pub fn generate(instance: Instance) -> Register {
         }
         .map(exti::generate),
     )
+    .reset(0)
 }

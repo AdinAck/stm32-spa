@@ -16,5 +16,4 @@ pub fn generate(i: u8) -> Field {
             Variant::new("OpenDrain", 1),
         ])),
     )
-    .reset("PushPull")
 }

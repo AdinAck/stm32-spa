@@ -18,5 +18,4 @@ pub fn generate() -> Field {
                 .docs(["The Vref+ pin is *not* connected to the internal reference."]),
         ])),
     )
-    .reset("Disconnected")
 }

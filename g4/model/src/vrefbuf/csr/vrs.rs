@@ -17,5 +17,4 @@ pub fn generate() -> Field {
             Variant::new("R2V900", 2).docs(["2.900v"]),
         ])),
     )
-    .reset("R2V048")
 }

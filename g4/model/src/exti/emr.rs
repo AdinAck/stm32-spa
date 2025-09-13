@@ -28,8 +28,9 @@ pub fn generate(instance: Instance) -> Register {
         instance.offset(),
         // TODO
         match instance {
-            Instance::I1 => (0..16).map(|x| em::generate(x, x).reset("Masked")),
+            Instance::I1 => (0..16).map(|x| em::generate(x, x)),
         },
     )
+    .reset(0)
     .docs(["Event Mask Register"])
 }

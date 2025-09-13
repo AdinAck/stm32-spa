@@ -31,5 +31,6 @@ pub fn generate(instance: Instance) -> Register {
             Instance::I1 => (0..16).map(|x| rt::generate(x, x)),
         },
     )
+    .reset(0)
     .docs(["Rising Trigger Selection Register"])
 }

@@ -6,9 +6,7 @@ use proto_hal_build::ir::{
     },
 };
 
-use crate::gpio::Instance;
-
-pub fn generate(i: u8, instance: Instance) -> Field {
+pub fn generate(i: u8) -> Field {
     Field::new(
         format!("mode{i}"),
         i * 2,
@@ -20,8 +18,4 @@ pub fn generate(i: u8, instance: Instance) -> Field {
             Variant::new("Analog", 3),
         ])),
     )
-    .reset(match (instance, i) {
-        (Instance::A, 13..=15) | (Instance::B, 3 | 4) => "Alternate",
-        _ => "Analog",
-    })
 }

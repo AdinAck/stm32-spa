@@ -35,4 +35,5 @@ pub fn generate(instance: Instance) -> Register {
         }
         .map(afsel::generate),
     )
+    .reset(0)
 }

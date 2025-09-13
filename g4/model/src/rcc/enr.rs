@@ -39,7 +39,7 @@ pub fn generate(instance: Instance) -> Register {
                 en::generate("dammux1en", 2),
                 en::generate("cordicen", 3),
                 en::generate("fmacen", 4),
-                en::generate("flashen", 8).reset("Enabled"),
+                en::generate("flashen", 8),
                 en::generate("crcen", 12),
             ],
             Instance::AHB2 => vec![
@@ -75,5 +75,9 @@ pub fn generate(instance: Instance) -> Register {
                 en::generate("hrtim1en", 26),
             ],
         },
-    )
+    ).reset(match instance {
+        Instance::AHB1 => 0x100,
+        Instance::AHB2 => 0,
+        Instance::APB2 => 0,
+    })
 }

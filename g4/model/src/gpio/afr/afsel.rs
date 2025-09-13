@@ -15,5 +15,4 @@ pub fn generate(x: u8) -> Field {
             (0..16).map(|i| Variant::new(format!("AF{i}"), i)),
         )),
     )
-    .reset("AF0")
 }

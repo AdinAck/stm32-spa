@@ -21,5 +21,4 @@ pub fn generate(x: u8) -> Field {
             Variant::new("PG", 6),
         ])),
     )
-    .reset("PA")
 }

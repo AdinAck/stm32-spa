@@ -16,5 +16,4 @@ pub fn generate(x: u8, offset: u8) -> Field {
             Variant::new("Enabled", 1),
         ])),
     )
-    .reset("Disabled")
 }
