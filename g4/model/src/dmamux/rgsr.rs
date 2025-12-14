@@ -1,27 +1,14 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        register::Register,
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Register, Variant, model::PeripheralEntry};
 
-pub fn generate() -> Register {
-    Register::new(
-        "rgsr",
-        0x140,
-        (0..4).map(|i| {
-            Field::new(
-                format!("of{i}"),
-                i,
-                1,
-                Access::read(Numericity::enumerated([
-                    Variant::new("NoEvent", 0),
-                    Variant::new("Occurred", 1),
-                ])),
-            )
-            .docs(["Trigger overrun event flag"])
-        }),
-    )
+pub fn rgsr<'cx>(dmamux: &mut PeripheralEntry<'cx>) {
+    let mut rgsr = dmamux.add_register(Register::new("rgsr", 0x140));
+
+    for i in 0..4 {
+        let mut of = rgsr.add_read_field(
+            Field::new(format!("of{i}"), i, 1).docs(["Trigger overrun event flag"]),
+        );
+
+        of.add_variant(Variant::new("NoEvent", 0));
+        of.add_variant(Variant::new("Occurred", 1));
+    }
 }

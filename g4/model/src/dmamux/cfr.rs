@@ -1,27 +1,14 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        register::Register,
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Register, Variant, model::PeripheralEntry};
 
-pub fn generate() -> Register {
-    Register::new(
-        "cfr",
-        0x84,
-        (0..16).map(|i| {
-            Field::new(
-                format!("csof{i}"),
-                i,
-                1,
-                Access::write(Numericity::enumerated([
-                    Variant::new("Noop", 0).inert(),
-                    Variant::new("Clear", 1),
-                ])),
-            )
-            .docs(["Clear synchronization overrun event flag"])
-        }),
-    )
+pub fn cfr<'cx>(dmamux: &mut PeripheralEntry<'cx>) {
+    let mut cfr = dmamux.add_register(Register::new("cfr", 0x84));
+
+    for i in 0..16 {
+        let mut sof = cfr.add_read_field(
+            Field::new(format!("csof{i}"), i, 1).docs(["Clear synchronization overrun event flag"]),
+        );
+
+        sof.add_variant(Variant::new("Noop", 0).inert());
+        sof.add_variant(Variant::new("Clear", 1));
+    }
 }

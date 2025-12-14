@@ -1,21 +1,30 @@
+use proto_hal_model::{Entitlement, Model, Peripheral};
+
+use crate::dmamux::ccr::ccr;
+
+pub mod ccr;
 pub mod cfr;
 pub mod csr;
-pub mod cxcr;
 pub mod rgcfr;
+pub mod rgcr;
 pub mod rgsr;
-pub mod rgxcr;
 
-use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
+pub fn dmamux(model: &mut Model, instances: u8, channels: u8, dmamux1en: Entitlement) {
+    let mut dmamux = model.add_peripheral(Peripheral::new("dmamux", 0x4002_0800));
 
-pub fn generate(instances: u8, channels: u8) -> Peripheral {
-    Peripheral::new(
-        "dmamux",
-        0x4002_0800,
-        (0..instances * channels)
-            .map(cxcr::generate)
-            .chain([csr::generate(), cfr::generate()])
-            .chain((0..4).map(rgxcr::generate))
-            .chain([rgsr::generate(), rgcfr::generate()]),
-    )
-    .entitlements([Entitlement::to("rcc::ahb1enr::dmamux1en::Enabled")])
+    dmamux.ontological_entitlements([dmamux1en]);
+
+    for i in 0..instances * channels {
+        ccr(&mut dmamux, i);
+    }
+
+    csr(&mut dmamux);
+    cfr(&mut dmamux);
+
+    for i in 0..4 {
+        rgcr(&mut dmamux, i);
+    }
+
+    rgsr(&mut dmamux);
+    rgcfr(&mut dmamux);
 }
