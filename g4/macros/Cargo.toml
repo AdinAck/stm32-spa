@@ -1,0 +1,19 @@
+[package]
+name = "stm32g4-spa-macros"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+model = { package = "stm32g4-spa-model", path = "../model" }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
+proto-hal-macros = { git = "https://github.com/adinack/proto-hal" }
+
+
+[lib]
+proc-macro = true
+
+[features]
+g431 = []
+g441 = []
+g474 = []
+g484 = []

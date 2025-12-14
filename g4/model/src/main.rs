@@ -1,14 +1,13 @@
-use model::DeviceVariant;
+use stm32g4_spa_model::{Configuration, model};
 
 fn main() {
-    env_logger::init();
     for variant in [
-        DeviceVariant::G431,
-        DeviceVariant::G441,
-        DeviceVariant::G474,
-        DeviceVariant::G484,
+        Configuration::g431(),
+        Configuration::g441(),
+        Configuration::g474(),
+        Configuration::g484(),
     ] {
         println!("=== Variant: {variant:?} ===");
-        proto_hal_build::codegen::validate(|| model::generate(variant));
+        proto_hal_model::validate(&model(variant));
     }
 }

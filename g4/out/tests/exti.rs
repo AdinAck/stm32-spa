@@ -4,9 +4,11 @@
 use defmt_rtt as _;
 use panic_probe as _;
 
-use cortex_m_spa::nvic;
-use g4::interrupt;
-use g4::{exti, gpioa, rcc};
+use cortex_m_spa as core_hal;
+use stm32g4_spa as hal;
+
+use core_hal::nvic;
+use hal::{exti, gpioa, interrupt, rcc};
 
 static mut FLAG: bool = false;
 
@@ -15,12 +17,12 @@ fn EXTI9_5() {
     unsafe { FLAG = true };
 
     assert!(
-        unsafe { nvic::iabr1::read_untracked().active23().is_active() },
+        unsafe { core_hal::read_untracked!(nvic::iabr1::active23).is_active() },
         "interrupt is currently active but not reported as such"
     );
 
     unsafe {
-        exti::pr1::write_from_zero_untracked(|w| w.pif5(exti::pr1::pif5::WriteVariant::Clear))
+        hal::write_from_zero_untracked!(exti::pr1::pif5 => Clear);
     };
 }
 
@@ -32,14 +34,21 @@ mod tests {
     #[before_each]
     fn reset() {
         unsafe {
-            exti::pr1::write_from_zero_untracked(|w| w.pif5(exti::pr1::pif5::WriteVariant::Clear));
-            exti::imr1::write_from_reset_untracked(|w| w);
-            exti::rtsr1::write_from_reset_untracked(|w| w);
+            hal::write_from_zero_untracked! {
+                exti::pr1::pif5 => Clear,
+            };
 
-            gpioa::odr::write_from_reset_untracked(|w| w);
-            gpioa::moder::write_from_reset_untracked(|w| w);
-
-            rcc::ahb2enr::write_from_reset_untracked(|w| w);
+            hal::write_from_reset_untracked! {
+                exti {
+                    imr1,
+                    rtsr1,
+                },
+                gpioa {
+                    odr,
+                    moder,
+                },
+                rcc::ahb2enr,
+            };
         }
 
         cortex_m::asm::delay(2);
@@ -47,70 +56,96 @@ mod tests {
 
     #[test]
     fn gpio_trigger() {
-        let p = unsafe { g4::peripherals() };
+        let p = unsafe { hal::assume_reset() };
 
-        let rcc::ahb2enr::States { gpioaen, .. } =
-            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
+        let gpioaen = hal::modify! {
+            rcc::ahb2enr::gpioaen(p.rcc.ahb2enr.gpioaen) => Enabled,
+        };
 
         cortex_m::asm::delay(2);
 
-        let mut gpioa = p.gpioa.unmask(gpioaen);
+        let mut gpioa = hal::unmask! {
+            gpioa(p.gpioa),
+            rcc::ahb2enr::gpioaen(gpioaen),
+        };
+
         let mut exti = p.exti;
 
-        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
-        exti::imr1::modify(|_, w| w.im5(exti.imr1.im5).unmasked());
-        exti::rtsr1::modify(|_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        hal::modify! {
+            gpioa::moder::mode5(gpioa.moder.mode5) => Output,
+            exti {
+                imr1::im5(exti.imr1.im5) => Unmasked,
+                rtsr1::rt5(exti.rtsr1.rt5) => Enabled,
+            }
+        };
 
         cortex_m::asm::delay(2);
 
         assert!(
-            exti::pr1::read().pif5(&mut exti.pr1.pif5).is_idle(),
+            hal::read!(exti::pr1::pif5(&mut exti.pr1.pif5)).is_idle(),
             "expected exti interrupt state to start idle"
         );
 
-        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
+        hal::modify! {
+            gpioa::odr::od5(gpioa.odr.od5) => High,
+        };
 
         cortex_m::asm::delay(2);
 
         assert!(
-            gpioa::idr::read().id5(&mut gpioa.idr.id5).is_high(),
+            hal::read!(gpioa::idr::id5(&mut gpioa.idr.id5)).is_high(),
             "expected gpio pin level to be high"
         );
         assert!(
-            exti::pr1::read().pif5(&mut exti.pr1.pif5).is_pending(),
+            hal::read!(exti::pr1::pif5(&mut exti.pr1.pif5)).is_pending(),
             "expected exti interrupt to be pending"
         );
     }
 
     #[test]
     fn gpio_trigger_with_nvic() {
-        let cp = unsafe { cortex_m_spa::peripherals() };
-        let p = unsafe { g4::peripherals() };
+        let cp = unsafe { core_hal::assume_reset() };
+        let p = unsafe { hal::assume_reset() };
 
         let mut nvic = cp.nvic;
 
-        nvic::iser1::write(|w| w.setena23(&mut nvic.iser1.setena23).enable());
+        unsafe {
+            core_hal::write! {
+                nvic::iser1::setena23(&mut nvic.iser1.setena23) => Enable,
+            }
+        };
 
-        let rcc::ahb2enr::States { gpioaen, .. } =
-            rcc::ahb2enr::modify(|_, w| w.gpioaen(p.rcc.ahb2enr.gpioaen).enabled());
+        let gpioaen = hal::modify! {
+            rcc::ahb2enr::gpioaen(p.rcc.ahb2enr.gpioaen) => Enabled,
+        };
 
         cortex_m::asm::delay(2);
 
-        let gpioa = p.gpioa.unmask(gpioaen);
+        let gpioa = hal::unmask! {
+            gpioa(p.gpioa),
+            rcc::ahb2enr::gpioaen(gpioaen),
+        };
+
         let mut exti = p.exti;
 
-        gpioa::moder::modify(|_, w| w.mode5(gpioa.moder.mode5).output());
-        exti::imr1::modify(|_, w| w.im5(exti.imr1.im5).unmasked());
-        exti::rtsr1::modify(|_, w| w.rt5(exti.rtsr1.rt5).enabled());
+        hal::modify! {
+            gpioa::moder::mode5(gpioa.moder.mode5) => Output,
+            exti {
+                imr1::im5(exti.imr1.im5) => Unmasked,
+                rtsr1::rt5(exti.rtsr1.rt5) => Enabled,
+            }
+        };
 
         cortex_m::asm::delay(2);
 
         assert!(
-            exti::pr1::read().pif5(&mut exti.pr1.pif5).is_idle(),
+            hal::read!(exti::pr1::pif5(&mut exti.pr1.pif5)).is_idle(),
             "expected exti interrupt state to start idle"
         );
 
-        gpioa::odr::modify(|_, w| w.od5(gpioa.odr.od5).high());
+        hal::modify! {
+            gpioa::odr::od5(gpioa.odr.od5) => High,
+        };
 
         cortex_m::asm::delay(100); // padding, just in case
 

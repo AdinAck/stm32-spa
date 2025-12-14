@@ -1,19 +1,8 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate() -> Field {
-    Field::new(
-        "envr",
-        0,
-        1,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Disabled", 0),
-            Variant::new("Enabled", 1),
-        ])),
-    )
+pub fn envr<'cx>(csr: &mut RegisterEntry<'cx>) {
+    let mut envr = csr.add_store_field(Field::new("envr", 0, 1));
+
+    envr.add_variant(Variant::new("Disabled", 0));
+    envr.add_variant(Variant::new("Enabled", 1));
 }

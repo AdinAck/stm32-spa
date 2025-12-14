@@ -1,20 +1,9 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(i: u8) -> Field {
-    Field::new(
-        format!("pupd{i}"),
-        i * 2,
-        2,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Floating", 0),
-            Variant::new("PullUp", 1),
-            Variant::new("PullDown", 2),
-        ])),
-    )
+pub fn pupd<'cx>(pupdr: &mut RegisterEntry<'cx>, i: u8) {
+    let mut pupd = pupdr.add_store_field(Field::new(format!("pupd{i}"), i * 2, 2));
+
+    pupd.add_variant(Variant::new("Floating", 0));
+    pupd.add_variant(Variant::new("PullUp", 1));
+    pupd.add_variant(Variant::new("PullDown", 2));
 }

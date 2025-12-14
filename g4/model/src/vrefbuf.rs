@@ -1,12 +1,14 @@
 pub mod csr;
 
-use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
+use proto_hal_model::{Entitlement, Model, Peripheral};
 
-pub fn generate() -> Peripheral {
-    Peripheral::new(
-        "vrefbuf",
-        0x4001_0030,
-        [csr::generate() /* TODO: CCR register. */],
-    )
-    .entitlements([Entitlement::to("rcc::apb2enr::syscfgen::Enabled")])
+use crate::vrefbuf::csr::csr;
+
+pub fn vrefbuf(model: &mut Model, syscfgen: Entitlement) {
+    let mut vrefbuf = model.add_peripheral(Peripheral::new("vrefbuf", 0x4001_0030));
+
+    vrefbuf.ontological_entitlements([syscfgen]);
+
+    csr(&mut vrefbuf);
+    // TODO: ccr
 }

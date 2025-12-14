@@ -1,21 +1,14 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate() -> Field {
-    Field::new(
-        "hiz",
-        1,
-        1,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Connected", 0)
-                .docs(["The Vref+ pin is connected to the internal reference."]),
-            Variant::new("Disconnected", 1)
-                .docs(["The Vref+ pin is *not* connected to the internal reference."]),
-        ])),
-    )
+pub fn hiz<'cx>(csr: &mut RegisterEntry<'cx>) {
+    let mut hiz = csr.add_store_field(Field::new("hiz", 1, 1));
+
+    hiz.add_variant(
+        Variant::new("Connected", 0)
+            .docs(["The Vref+ pin is connected to the internal reference."]),
+    );
+    hiz.add_variant(
+        Variant::new("Disconnected", 1)
+            .docs(["The Vref+ pin is *not* connected to the internal reference."]),
+    );
 }

@@ -1,13 +1,17 @@
 pub mod ospeed;
 
-use proto_hal_build::ir::structures::register::Register;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-use crate::gpio::Instance;
+use crate::gpio::{Instance, ospeedr::ospeed::ospeed};
 
-pub fn generate(instance: Instance) -> Register {
-    Register::new("ospeedr", 8, (0..16).map(ospeed::generate)).reset(match instance {
+pub fn ospeedr<'cx>(gpio: &mut PeripheralEntry<'cx>, instance: Instance) {
+    let mut ospeedr = gpio.add_register(Register::new("ospeedr", 8).reset(match instance {
         Instance::A => 0x08,
         Instance::B => 0x0c00_0000,
         _ => 0,
-    })
+    }));
+
+    for i in 0..16 {
+        ospeed(&mut ospeedr, i);
+    }
 }

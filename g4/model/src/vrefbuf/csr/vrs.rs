@@ -1,20 +1,9 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate() -> Field {
-    Field::new(
-        "vrs",
-        4,
-        2,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("R2V048", 0).docs(["2.048v."]),
-            Variant::new("R2V500", 1).docs(["2.500v"]),
-            Variant::new("R2V900", 2).docs(["2.900v"]),
-        ])),
-    )
+pub fn vrs<'cx>(csr: &mut RegisterEntry<'cx>) {
+    let mut vrs = csr.add_store_field(Field::new("vrs", 4, 2));
+
+    vrs.add_variant(Variant::new("R2V048", 0).docs(["2.048v."]));
+    vrs.add_variant(Variant::new("R2V500", 1).docs(["2.500v"]));
+    vrs.add_variant(Variant::new("R2V900", 2).docs(["2.900v"]));
 }

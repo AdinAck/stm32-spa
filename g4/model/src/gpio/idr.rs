@@ -1,7 +1,13 @@
+use proto_hal_model::{Register, model::PeripheralEntry};
+
+use crate::gpio::idr::id::id;
+
 pub mod id;
 
-use proto_hal_build::ir::structures::register::Register;
+pub fn idr<'cx>(gpio: &mut PeripheralEntry<'cx>) {
+    let mut idr = gpio.add_register(Register::new("idr", 0x10));
 
-pub fn generate() -> Register {
-    Register::new("idr", 0x10, (0..16).map(id::generate))
+    for i in 0..16 {
+        id(&mut idr, i);
+    }
 }

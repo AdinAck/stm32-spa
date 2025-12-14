@@ -1,19 +1,8 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(x: u8, offset: u8) -> Field {
-    Field::new(
-        format!("ft{x}"),
-        offset,
-        1,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Disabled", 0),
-            Variant::new("Enabled", 1),
-        ])),
-    )
+pub fn ft<'cx>(ftsr: &mut RegisterEntry<'cx>, i: u8, offset: u8) {
+    let mut ft = ftsr.add_store_field(Field::new(format!("ft{i}"), offset, 1));
+
+    ft.add_variant(Variant::new("Disabled", 0));
+    ft.add_variant(Variant::new("Enabled", 1));
 }

@@ -6,45 +6,67 @@ use panic_probe as _;
 
 use cortex_m_rt::entry;
 use defmt::unwrap;
-use g4::{cordic, rcc};
 use probe_plotter::make_metric;
-use proto_hal::stasis::Freeze as _;
+use stm32g4_spa::{self as hal, cordic};
+
+use hal::rcc;
 
 #[entry]
 fn main() -> ! {
     let mut cos_plot = unwrap!(make_metric!(COSINE: i16 = 0));
     let mut sin_plot = unwrap!(make_metric!(SINE: i16 = 0));
 
-    let p = unsafe { g4::peripherals() };
+    let p = unsafe { hal::assume_reset() };
 
-    let rcc::ahb1enr::States { cordicen, .. } =
-        rcc::ahb1enr::modify(|_, w| w.cordicen(p.rcc.ahb1enr.cordicen).enabled());
-    let cordic = p.cordic.unmask(cordicen);
+    let cordicen = hal::modify! {
+        rcc::ahb1enr::cordicen(p.rcc.ahb1enr.cordicen) => Enabled,
+    };
 
-    let cordic::csr::States { ressize, .. } =
-        cordic::csr::modify(|_, w| w.ressize(cordic.csr.ressize).q15());
+    let cordic = hal::unmask! {
+        cordic(p.cordic),
+        rcc::ahb1enr::cordicen(cordicen),
+    };
+
+    let ressize = hal::modify! {
+        cordic::csr::ressize(cordic.csr.ressize) => Q15,
+    };
 
     cortex_m::asm::delay(2);
 
-    let mut arg = cordic.wdata.arg.unmask(cordic.csr.argsize);
-    let (_, [res0_ressize_ent, res1_ressize_ent]) = ressize.freeze();
-    let (_, [res0_nres_ent, res1_nres_ent]) = cordic.csr.nres.freeze();
-    let (mut res0, mut res1) = (
-        cordic.rdata.res0.unmask(res0_nres_ent, res0_ressize_ent),
-        cordic.rdata.res1.unmask(res1_nres_ent, res1_ressize_ent),
-    );
+    let mut arg = hal::unmask! {
+        cordic::wdata::arg(cordic.wdata.arg),
+        cordic::csr::argsize(cordic.csr.argsize),
+    };
+
+    let (mut res0, mut res1) = hal::unmask! {
+        cordic {
+            rdata {
+                res0(cordic.rdata.res0),
+                res1(cordic.rdata.res1),
+            },
+            csr {
+                ressize(ressize),
+                nres(cordic.csr.nres)
+            }
+        }
+    };
 
     let mut i = 0;
 
     loop {
-        cordic::wdata::write(|w| w.arg(&mut arg, i));
+        hal::write! {
+            cordic::wdata::arg(&mut arg) => i,
+        }
 
-        let cos = cordic::rdata::read().res0(&mut res0) as i16;
+        let rdata = hal::read! {
+            cordic::rdata {
+                res0(&mut res0),
+                res1(&mut res1),
+            }
+        };
 
-        let sin = cordic::rdata::read().res1(&mut res1) as i16;
-
-        cos_plot.set(cos);
-        sin_plot.set(sin);
+        cos_plot.set(rdata.res0 as i16);
+        sin_plot.set(rdata.res1 as i16);
 
         i = i.wrapping_add(10_000);
     }

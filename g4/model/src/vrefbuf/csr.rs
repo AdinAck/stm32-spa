@@ -3,18 +3,15 @@ pub mod hiz;
 pub mod vrr;
 pub mod vrs;
 
-use proto_hal_build::ir::structures::register::Register;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-pub fn generate() -> Register {
-    Register::new(
-        "csr",
-        0,
-        [
-            envr::generate(),
-            hiz::generate(),
-            vrr::generate(),
-            vrs::generate(),
-        ],
-    )
-    .reset(0x2)
+use crate::vrefbuf::csr::{envr::envr, hiz::hiz, vrr::vrr, vrs::vrs};
+
+pub fn csr<'cx>(vrefbuf: &mut PeripheralEntry<'cx>) {
+    let mut csr = vrefbuf.add_register(Register::new("csr", 0).reset(0x2));
+
+    envr(&mut csr);
+    hiz(&mut csr);
+    vrr(&mut csr);
+    vrs(&mut csr);
 }

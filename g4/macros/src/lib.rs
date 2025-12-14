@@ -1,7 +1,8 @@
-use model::{Configuration, model};
+use model::Configuration;
+use proto_hal_macros::generate_macros;
 
-fn main() -> Result<(), String> {
-    let variant = if cfg!(feature = "g431") {
+generate_macros!({
+    if cfg!(feature = "g431") {
         Configuration::g431()
     } else if cfg!(feature = "g441") {
         Configuration::g441()
@@ -11,12 +12,5 @@ fn main() -> Result<(), String> {
         Configuration::g484()
     } else {
         Configuration::default()
-    };
-
-    proto_hal_build::render(&model(variant));
-
-    // prevent recompiling when tests change
-    println!("cargo::rerun-if-changed=../model");
-
-    Ok(())
-}
+    }
+});

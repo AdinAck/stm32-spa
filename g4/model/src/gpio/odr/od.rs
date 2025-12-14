@@ -1,19 +1,8 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(i: u8) -> Field {
-    Field::new(
-        format!("od{i}"),
-        i,
-        1,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Low", 0),
-            Variant::new("High", 1),
-        ])),
-    )
+pub fn od<'cx>(odr: &mut RegisterEntry<'cx>, i: u8) {
+    let mut od = odr.add_store_field(Field::new(format!("od{i}"), i, 1));
+
+    od.add_variant(Variant::new("Low", 0));
+    od.add_variant(Variant::new("High", 1));
 }

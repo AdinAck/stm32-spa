@@ -1,18 +1,17 @@
 pub mod exticr;
 
-use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
+use proto_hal_model::{Entitlement, Model, Peripheral};
 
-pub fn generate() -> Peripheral {
-    Peripheral::new(
-        "syscfg",
-        0x4001_0000,
-        [
-            exticr::generate(exticr::Instance::I1),
-            exticr::generate(exticr::Instance::I2),
-            exticr::generate(exticr::Instance::I3),
-            exticr::generate(exticr::Instance::I4),
-        ],
-    )
-    .entitlements([Entitlement::to("rcc::apb2enr::syscfgen::Enabled")])
-    .docs(["This peripheral is incomplete."])
+use crate::syscfg::exticr::exticr;
+
+pub fn syscfg(model: &mut Model, syscfgen: Entitlement) {
+    let mut syscfg = model.add_peripheral(
+        Peripheral::new("syscfg", 0x4001_0000).docs(["This peripheral is incomplete."]),
+    );
+
+    syscfg.ontological_entitlements([syscfgen]);
+
+    for instance in exticr::Instance::iter() {
+        exticr(&mut syscfg, instance);
+    }
 }

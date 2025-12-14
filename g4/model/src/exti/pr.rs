@@ -1,6 +1,8 @@
-pub mod pif;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-use proto_hal_build::ir::structures::register::Register;
+use crate::exti::pr::pif::pif;
+
+pub mod pif;
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -22,14 +24,14 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance) -> Register {
-    Register::new(
-        instance.ident(),
-        instance.offset(),
-        // TODO
-        match instance {
-            Instance::I1 => (0..16).map(|x| pif::generate(x, x)),
-        },
-    )
-    .docs(["Pending Register"])
+pub fn pr<'cx>(exti: &mut PeripheralEntry<'cx>, instance: Instance) {
+    let mut pr = exti.add_register(
+        Register::new(instance.ident(), instance.offset()).docs(["Pending Register"]),
+    );
+
+    for i in match instance {
+        Instance::I1 => 0..16,
+    } {
+        pif(&mut pr, i, i);
+    }
 }

@@ -7,19 +7,28 @@ use panic_probe as _;
 #[defmt_test::tests]
 mod tests {
     use defmt::assert_eq;
-    use g4::{crc, rcc};
+    use stm32g4_spa as hal;
+
+    use hal::{crc, rcc};
 
     #[test]
     fn initial() {
-        let p = unsafe { g4::peripherals() };
+        let p = unsafe { hal::assume_reset() };
 
-        let rcc::ahb1enr::States { crcen, .. } =
-            rcc::ahb1enr::modify(|_, w| w.crcen(p.rcc.ahb1enr.crcen).enabled());
+        let crcen = hal::modify! {
+            rcc::ahb1enr::crcen(p.rcc.ahb1enr.crcen) => Enabled,
+        };
 
         cortex_m::asm::delay(2);
 
-        let mut crc = p.crc.unmask(crcen);
+        let mut crc = hal::unmask! {
+            crc(p.crc),
+            rcc::ahb1enr::crcen(crcen),
+        };
 
-        assert_eq!(crc::dr::read().dr(&mut crc.dr.dr), crc.init.init.value());
+        assert_eq!(
+            hal::read!(crc::dr::dr(&mut crc.dr.dr)),
+            crc.init.init.value()
+        );
     }
 }
