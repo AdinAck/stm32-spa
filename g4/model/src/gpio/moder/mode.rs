@@ -1,21 +1,10 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(i: u8) -> Field {
-    Field::new(
-        format!("mode{i}"),
-        i * 2,
-        2,
-        Access::read_write(Numericity::enumerated([
-            Variant::new("Input", 0),
-            Variant::new("Output", 1),
-            Variant::new("Alternate", 2),
-            Variant::new("Analog", 3),
-        ])),
-    )
+pub fn mode<'cx>(moder: &mut RegisterEntry<'cx>, i: u8) {
+    let mut mode = moder.add_store_field(Field::new(format!("mode{i}"), i * 2, 2));
+
+    mode.add_variant(Variant::new("Input", 0));
+    mode.add_variant(Variant::new("Output", 1));
+    mode.add_variant(Variant::new("Alternate", 2));
+    mode.add_variant(Variant::new("Analog", 3));
 }

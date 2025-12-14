@@ -6,43 +6,53 @@ pub mod rcc;
 pub mod syscfg;
 pub mod vrefbuf;
 
-use proto_hal_build::ir::{
-    structures::{hal::Hal, interrupts::Interrupt},
-    utils::diagnostic::Diagnostics,
+use proto_hal_model::{Interrupt, Model};
+
+use crate::{
+    cordic::cordic, crc::crc, exti::exti, gpio::gpio, rcc::rcc, syscfg::syscfg, vrefbuf::vrefbuf,
 };
 
-#[derive(Debug)]
-pub enum DeviceVariant {
-    G431,
-    G441,
-    G474,
-    G484,
+#[derive(Debug, Default)]
+pub struct Configuration {
+    extra_interrupts: bool,
 }
 
-pub fn generate(variant: DeviceVariant) -> (Hal, Diagnostics) {
+impl Configuration {
+    pub fn g431() -> Self {
+        Self {
+            extra_interrupts: false,
+        }
+    }
+
+    pub fn g441() -> Self {
+        Self {
+            extra_interrupts: false,
+        }
+    }
+
+    pub fn g474() -> Self {
+        Self {
+            extra_interrupts: true,
+        }
+    }
+
+    pub fn g484() -> Self {
+        Self {
+            extra_interrupts: true,
+        }
+    }
+}
+
+pub fn model(config: Configuration) -> Model {
     let extra_interrupts = |interrupt| {
-        if matches!(variant, DeviceVariant::G474 | DeviceVariant::G484) {
+        if config.extra_interrupts {
             interrupt
         } else {
             Interrupt::reserved()
         }
     };
 
-    let hal = Hal::new([
-        rcc::generate(),
-        gpio::generate(gpio::Instance::A),
-        gpio::generate(gpio::Instance::B),
-        gpio::generate(gpio::Instance::C),
-        gpio::generate(gpio::Instance::D),
-        gpio::generate(gpio::Instance::E),
-        gpio::generate(gpio::Instance::F),
-        syscfg::generate(),
-        exti::generate(),
-        cordic::generate(),
-        crc::generate(),
-        vrefbuf::generate(),
-    ])
-    .interrupts([
+    let mut model = Model::new().with_interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),
         Interrupt::handler("PVD_PVM").docs(["PVD through EXTI line detection"]),
         Interrupt::handler("RTC_TAMP_CSS_LSE"),
@@ -147,7 +157,18 @@ pub fn generate(variant: DeviceVariant) -> (Hal, Diagnostics) {
         Interrupt::handler("FMAC"),
     ]);
 
-    let diagnostics = hal.validate();
+    let rcc = rcc(&mut model);
+    gpio(&mut model, gpio::Instance::A, rcc.ahb2enr.gpioaen);
+    gpio(&mut model, gpio::Instance::B, rcc.ahb2enr.gpioben);
+    gpio(&mut model, gpio::Instance::C, rcc.ahb2enr.gpiocen);
+    gpio(&mut model, gpio::Instance::D, rcc.ahb2enr.gpioden);
+    gpio(&mut model, gpio::Instance::E, rcc.ahb2enr.gpioeen);
+    gpio(&mut model, gpio::Instance::F, rcc.ahb2enr.gpiofen);
+    syscfg(&mut model, rcc.apb2enr.syscfgen);
+    exti(&mut model);
+    cordic(&mut model, rcc.ahb1enr.cordicen);
+    crc(&mut model, rcc.ahb1enr.crcen);
+    vrefbuf(&mut model, rcc.apb2enr.syscfgen);
 
-    (hal, diagnostics)
+    model
 }

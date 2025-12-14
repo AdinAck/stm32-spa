@@ -9,7 +9,11 @@ pub mod ospeedr;
 pub mod otyper;
 pub mod pupdr;
 
-use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
+use proto_hal_model::{Entitlement, Model, Peripheral};
+
+use crate::gpio::{
+    afr::afr, idr::idr, moder::moder, odr::odr, ospeedr::ospeedr, otyper::otyper, pupdr::pupdr,
+};
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -23,7 +27,7 @@ pub enum Instance {
 }
 
 impl Instance {
-    fn ident(&self) -> String {
+    fn ident(&self) -> &str {
         match self {
             Instance::A => "gpioa",
             Instance::B => "gpiob",
@@ -33,7 +37,6 @@ impl Instance {
             Instance::F => "gpiof",
             Instance::G => "gpiog",
         }
-        .to_string()
     }
 
     fn base_addr(&self) -> u32 {
@@ -49,26 +52,20 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance) -> Peripheral {
-    Peripheral::new(
-        instance.ident(),
-        instance.base_addr(),
-        [
-            moder::generate(instance),
-            otyper::generate(),
-            ospeedr::generate(instance),
-            pupdr::generate(instance),
-            idr::generate(),
-            odr::generate(),
-            // bsrr::generate(), // TODO: requires "effects"
-            // lckr::generate(), // TODO
-            afr::generate(afr::Instance::L),
-            afr::generate(afr::Instance::H),
-            // brr::generate(), // TODO: requires "effects"
-        ],
-    )
-    .entitlements([Entitlement::to(format!(
-        "rcc::ahb2enr::{}en::Enabled",
-        instance.ident()
-    ))])
+pub fn gpio(model: &mut Model, instance: Instance, gpioen: Entitlement) {
+    let mut gpio = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
+
+    gpio.ontological_entitlements([gpioen]);
+
+    moder(&mut gpio, instance);
+    otyper(&mut gpio);
+    ospeedr(&mut gpio, instance);
+    pupdr(&mut gpio, instance);
+    idr(&mut gpio);
+    odr(&mut gpio);
+    // bsrr // TODO: requires "effects"
+    // lckr // TODO
+    afr(&mut gpio, afr::Instance::L);
+    afr(&mut gpio, afr::Instance::H);
+    // brr // TODO: requires "effects"
 }

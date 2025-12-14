@@ -1,6 +1,8 @@
-pub mod afsel;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-use proto_hal_build::ir::structures::register::Register;
+use crate::gpio::afr::afsel::afsel;
+
+pub mod afsel;
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -25,15 +27,13 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance) -> Register {
-    Register::new(
-        instance.ident(),
-        instance.offset(),
-        match instance {
-            Instance::L => 0..8,
-            Instance::H => 8..16,
-        }
-        .map(afsel::generate),
-    )
-    .reset(0)
+pub fn afr<'cx>(gpio: &mut PeripheralEntry<'cx>, instance: Instance) {
+    let mut afr = gpio.add_register(Register::new(instance.ident(), instance.offset()).reset(0));
+
+    for i in match instance {
+        Instance::L => 0..8,
+        Instance::H => 8..16,
+    } {
+        afsel(&mut afr, i);
+    }
 }

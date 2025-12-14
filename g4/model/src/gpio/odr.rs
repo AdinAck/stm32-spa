@@ -1,7 +1,13 @@
+use proto_hal_model::{Register, model::PeripheralEntry};
+
+use crate::gpio::odr::od::od;
+
 pub mod od;
 
-use proto_hal_build::ir::structures::register::Register;
+pub fn odr<'cx>(gpio: &mut PeripheralEntry<'cx>) {
+    let mut odr = gpio.add_register(Register::new("odr", 0x14).reset(0));
 
-pub fn generate() -> Register {
-    Register::new("odr", 0x14, (0..16).map(od::generate)).reset(0)
+    for i in 0..16 {
+        od(&mut odr, i);
+    }
 }

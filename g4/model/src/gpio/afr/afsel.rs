@@ -1,18 +1,9 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(x: u8) -> Field {
-    Field::new(
-        format!("afsel{x}"),
-        (x % 8) * 4,
-        4,
-        Access::read_write(Numericity::enumerated(
-            (0..16).map(|i| Variant::new(format!("AF{i}"), i)),
-        )),
-    )
+pub fn afsel<'cx>(afr: &mut RegisterEntry<'cx>, i: u8) {
+    let mut afsel = afr.add_store_field(Field::new(format!("afsel{i}"), (i % 8) * 4, 4));
+
+    for v in 0..16 {
+        afsel.add_variant(Variant::new(format!("AF{v}"), v));
+    }
 }

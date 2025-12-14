@@ -1,19 +1,8 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        variant::Variant,
-    },
-};
+use proto_hal_model::{Field, Variant, model::RegisterEntry};
 
-pub fn generate(i: u8) -> Field {
-    Field::new(
-        format!("id{i}"),
-        i,
-        1,
-        Access::read(Numericity::enumerated([
-            Variant::new("Low", 0),
-            Variant::new("High", 1),
-        ])),
-    )
+pub fn id<'cx>(idr: &mut RegisterEntry<'cx>, i: u8) {
+    let mut id = idr.add_read_field(Field::new(format!("id{i}"), i, 1));
+
+    id.add_variant(Variant::new("Low", 0));
+    id.add_variant(Variant::new("High", 1));
 }

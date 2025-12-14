@@ -1,6 +1,8 @@
 pub mod em;
 
-use proto_hal_build::ir::structures::register::Register;
+use proto_hal_model::{Register, model::PeripheralEntry};
+
+use crate::exti::emr::em::em;
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -8,11 +10,10 @@ pub enum Instance {
 }
 
 impl Instance {
-    fn ident(&self) -> String {
+    fn ident(&self) -> &str {
         match self {
             Instance::I1 => "emr1",
         }
-        .to_string()
     }
 
     fn offset(&self) -> u32 {
@@ -22,15 +23,16 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance) -> Register {
-    Register::new(
-        instance.ident(),
-        instance.offset(),
-        // TODO
-        match instance {
-            Instance::I1 => (0..16).map(|x| em::generate(x, x)),
-        },
-    )
-    .reset(0)
-    .docs(["Event Mask Register"])
+pub fn emr<'cx>(exti: &mut PeripheralEntry<'cx>, instance: Instance) {
+    let mut emr = exti.add_register(
+        Register::new(instance.ident(), instance.offset())
+            .reset(0)
+            .docs(["Event Mask Register"]),
+    );
+
+    for i in match instance {
+        Instance::I1 => 0..16,
+    } {
+        em(&mut emr, i, i);
+    }
 }

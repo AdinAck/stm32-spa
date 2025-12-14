@@ -1,6 +1,8 @@
-pub mod ft;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-use proto_hal_build::ir::structures::register::Register;
+use crate::exti::ftsr::ft::ft;
+
+pub mod ft;
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -22,15 +24,16 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance) -> Register {
-    Register::new(
-        instance.ident(),
-        instance.offset(),
-        // TODO
-        match instance {
-            Instance::I1 => (0..16).map(|x| ft::generate(x, x)),
-        },
-    )
-    .reset(0)
-    .docs(["Falling Trigger Selection Register"])
+pub fn ftsr<'cx>(exti: &mut PeripheralEntry<'cx>, instance: Instance) {
+    let mut ftsr = exti.add_register(
+        Register::new(instance.ident(), instance.offset())
+            .reset(0)
+            .docs(["Falling Trigger Selection Register"]),
+    );
+
+    for i in match instance {
+        Instance::I1 => 0..16,
+    } {
+        ft(&mut ftsr, i, i)
+    }
 }

@@ -1,21 +1,7 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        register::Register,
-    },
-};
+use proto_hal_model::{Field, Register, model::PeripheralEntry};
 
-pub fn generate() -> Register {
-    Register::new(
-        "pol",
-        0x14,
-        [Field::new(
-            "pol",
-            0,
-            32,
-            Access::read_write(Numericity::Numeric),
-        )],
-    )
-    .reset(0x04c1_1db7)
+pub fn pol<'cx>(crc: &mut PeripheralEntry<'cx>) {
+    let mut pol = crc.add_register(Register::new("pol", 0x14).reset(0x04c1_1db7));
+
+    pol.add_store_field(Field::new("pol", 0, 32));
 }
