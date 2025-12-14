@@ -4,8 +4,7 @@ set -euxo pipefail
 
 cd g4/model
 
-# this takes a long time now so let's skip it
-# cargo r
+cargo r
 cargo clippy -- --deny warnings
 
 cd ../out
