@@ -10,76 +10,102 @@ mod tests {
 
     use defmt::{assert_eq, panic, println};
     use fixed::types::I1F31;
-    use g4::{cordic, dma1, dmamux, rcc};
+    use stm32g4_spa as hal;
+
+    use hal::{cordic, dma1, dmamux, rcc};
 
     #[test]
     fn basic() {
         const N: usize = 2;
         static DST: [u32; N] = [0; N];
 
-        let p = unsafe { g4::peripherals() };
+        let p = unsafe { hal::assume_reset() };
 
         critical_section::with(|cs| {
-            let rcc::ahb1enr::States {
-                cordicen,
-                dma1en,
-                dmamux1en,
-                ..
-            } = rcc::ahb1enr::modify_in_cs(cs, |_, w| {
-                w.cordicen(p.rcc.ahb1enr.cordicen)
-                    .enabled()
-                    .dma1en(p.rcc.ahb1enr.dma1en)
-                    .enabled()
-                    .dmamux1en(p.rcc.ahb1enr.dmamux1en)
-                    .enabled()
-            });
+            let (cordicen, dma1en, dma1muxen) = hal::modify! {
+                rcc::ahb1enr {
+                    cordicen(p.rcc.ahb1enr.cordicen) => Enabled,
+                    dma1en(p.rcc.ahb1enr.dma1en) => Enabled,
+                    dmamux1en(p.rcc.ahb1enr.dmamux1en) => Enabled,
+                }
+            };
 
             cortex_m::asm::delay(2);
 
             // cordic
-            let cordic = p.cordic.unmask(cordicen);
+            let cordic = hal::unmask! {
+                cordic(p.cordic),
+                rcc::ahb1enr::cordicen(cordicen),
+            };
 
-            cordic::csr::modify_in_cs(cs, |_, w| {
-                w.func(cordic.csr.func)
-                    .sqrt()
-                    .scale(cordic.csr.scale)
-                    .preserve()
-                    .dmaren(cordic.csr.dmaren)
-                    .enabled()
-            });
+            hal::modify! {
+                cordic::csr {
+                    func(cordic.csr.func) => Sqrt,
+                    scale(&cordic.csr.scale),
+                    dmaren(cordic.csr.dmaren) => Enabled,
+                }
+            };
 
-            let mut arg = cordic.wdata.arg.unmask(cordic.csr.argsize);
+            let mut arg = hal::unmask! {
+                cordic {
+                    wdata::arg(cordic.wdata.arg),
+                    csr::argsize(cordic.csr.argsize),
+                }
+            };
 
             // dma
-            let mut dma1 = p.dma1.unmask(dma1en);
+            let mut dma1 = hal::unmask! {
+                dma1(p.dma1),
+                rcc::ahb1enr::dma1en(dma1en),
+            };
 
             // configure channel
-            let dma1::ccr0::States { psize, msize, .. } = dma1::ccr0::modify_in_cs(cs, |_, w| {
-                w.dir(dma1.ccr0.dir, &dma1.ccr0.en)
-                    .read_from_peripheral()
-                    .minc(dma1.ccr0.minc, &dma1.ccr0.en)
-                    .enabled()
-                    .psize(dma1.ccr0.psize, &dma1.ccr0.en)
-                    .bits_32()
-                    .msize(dma1.ccr0.msize, &dma1.ccr0.en)
-                    .bits_32()
-            });
+            let (.., psize, msize) = hal::modify! {
+                dma1::ccr0 {
+                    dir(dma1.ccr0.dir) => ReadFromPeripheral,
+                    en(&dma1.ccr0.en),
+                    minc(dma1.ccr0.minc) => Enabled,
+                    psize(dma1.ccr0.psize) => Bits32,
+                    msize(dma1.ccr0.msize) => Bits32,
+                }
+            };
 
-            let pa32 = dma1.cpar0.pa32.unmask(psize);
-            let mut ma32 = dma1.cmar0.ma32.unmask(msize);
+            let (pa32, mut ma32) = hal::unmask! {
+                dma1 {
+                    cpar0::pa32(dma1.cpar0.pa32),
+                    cmar0::ma32(dma1.cmar0.ma32),
+                    ccr0 {
+                        psize(psize),
+                        msize(msize),
+                    }
+                }
+            };
 
             // peripheral address
-            dma1::cpar0::write(|w| {
-                w.pa32(pa32, &dma1.ccr0.en)
-                    .value::<{ (cordic::base_addr() + cordic::rdata::OFFSET) as _ }>()
-            });
 
-            let dst_addr = (&raw const DST).addr();
+            hal::write! {
+                dma1 {
+                    cpar0::pa32(pa32) => 0x4002_0c08, // cordic::rdata
+                    ccr0::en(&dma1.ccr0.en),
+                }
+            };
+
+            let dst_addr = (&raw const DST).addr() as _;
 
             // memory address
-            dma1::cmar0::write(|w| w.ma32(&mut ma32, &dma1.ccr0.en).value(dst_addr as u32));
+            hal::write!(
+                dma1 {
+                    cmar0::ma32(&mut ma32) => dst_addr,
+                    ccr0::en(&dma1.ccr0.en),
+                }
+            );
 
             // transfer length
+            hal::write! {
+                dma1 {
+                    cndtr0::ndt(&mut dma1.cndtr0.ndt)
+                }
+            };
             dma1::cndtr0::write(|w| w.ndt(&mut dma1.cndtr0.ndt, N as u32, &dma1.ccr0.en));
 
             // mux

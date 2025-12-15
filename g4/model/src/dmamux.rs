@@ -1,6 +1,6 @@
 use proto_hal_model::{Entitlement, Model, Peripheral};
 
-use crate::dmamux::ccr::ccr;
+use crate::dmamux::{ccr::ccr, cfr::cfr, csr::csr, rgcfr::rgcfr, rgcr::rgcr, rgsr::rgsr};
 
 pub mod ccr;
 pub mod cfr;

@@ -5,7 +5,9 @@ pub mod cpar;
 pub mod ifcr;
 pub mod isr;
 
-use proto_hal_build::ir::structures::{entitlement::Entitlement, peripheral::Peripheral};
+use proto_hal_model::{Entitlement, Model, Peripheral};
+
+use crate::dma::{ccr::ccr, cmar::cmar, cndtr::cndtr, cpar::cpar, ifcr::ifcr, isr::isr};
 
 #[derive(Clone, Copy)]
 pub enum Instance {
@@ -14,12 +16,11 @@ pub enum Instance {
 }
 
 impl Instance {
-    fn ident(&self) -> String {
+    fn ident(&self) -> &str {
         match self {
             Instance::Dma1 => "dma1",
             Instance::Dma2 => "dma2",
         }
-        .to_string()
     }
 
     fn base_addr(&self) -> u32 {
@@ -30,23 +31,32 @@ impl Instance {
     }
 }
 
-pub fn generate(instance: Instance, channels: u8) -> Peripheral {
-    Peripheral::new(
-        instance.ident(),
-        instance.base_addr(),
-        [isr::generate(), ifcr::generate()]
-            .into_iter()
-            .chain((0..channels).flat_map(|channel| {
-                [
-                    ccr::generate(instance, channel),
-                    cndtr::generate(instance, channel),
-                    cpar::generate(instance, channel),
-                    cmar::generate(instance, channel),
-                ]
-            })),
-    )
-    .entitlements([Entitlement::to(format!(
-        "rcc::ahb1enr::{}en::Enabled",
-        instance.ident()
-    ))])
+pub fn dma(model: &mut Model, instance: Instance, channels: u8, dmaen: Entitlement) {
+    let mut dma = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
+
+    dma.ontological_entitlements([dmaen]);
+
+    isr(&mut dma);
+    ifcr(&mut dma);
+
+    for i in 0..channels {
+        let ccr = ccr(&mut dma, i);
+        cndtr(&mut dma, i, cndtr::Entitlements { en: ccr.en });
+        cpar(
+            &mut dma,
+            i,
+            cpar::Entitlements {
+                en: ccr.en,
+                psize: ccr.psize,
+            },
+        );
+        cmar(
+            &mut dma,
+            i,
+            cmar::Entitlements {
+                en: ccr.en,
+                msize: ccr.msize,
+            },
+        );
+    }
 }

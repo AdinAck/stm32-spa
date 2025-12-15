@@ -1,69 +1,26 @@
-use proto_hal_build::ir::{
-    access::{Access, AccessProperties, HardwareAccess, ReadWrite},
-    structures::{entitlement::Entitlement, field::Field, register::Register},
+pub mod pa16;
+pub mod pa32;
+pub mod pa8;
+
+use proto_hal_model::{Register, model::PeripheralEntry};
+
+use crate::dma::{
+    ccr::{en, psize},
+    cpar::{pa8::pa8, pa16::pa16, pa32::pa32},
 };
 
-fn offset(channel: u8) -> u32 {
-    0x10 + 0x14 * channel as u32
+#[derive(Debug, Clone, Copy)]
+pub struct Entitlements {
+    pub en: en::Output,
+    pub psize: psize::Output,
 }
 
-pub fn generate(instance: super::Instance, channel: u8) -> Register {
-    Register::new(
-        format!("cpar{channel}"),
-        offset(channel),
-        [
-            (
-                "pa8",
-                0,
-                32,
-                [Entitlement::to(format!(
-                    "{}::ccr{}::psize::Bits8",
-                    instance.ident(),
-                    channel,
-                ))],
-                ["Peripheral address for 8 bit transfers."],
-            ),
-            (
-                "pa16",
-                1,
-                31,
-                [Entitlement::to(format!(
-                    "{}::ccr{}::psize::Bits16",
-                    instance.ident(),
-                    channel,
-                ))],
-                ["Peripheral address for 16 bit transfers."],
-            ),
-            (
-                "pa32",
-                2,
-                30,
-                [Entitlement::to(format!(
-                    "{}::ccr{}::psize::Bits32",
-                    instance.ident(),
-                    channel,
-                ))],
-                ["Peripheral address for 32 bit transfers."],
-            ),
-        ]
-        .map(|(ident, offset, width, entitlements, docs)| {
-            Field::new(
-                ident,
-                offset,
-                width,
-                Access::ReadWrite(ReadWrite::Asymmetrical {
-                    read: AccessProperties::numeric(),
-                    write: AccessProperties::numeric().entitlements([Entitlement::to(format!(
-                        "{}::ccr{}::en::Disabled",
-                        instance.ident(),
-                        channel,
-                    ))]),
-                }),
-            )
-            .reset(0)
-            .entitlements(entitlements)
-            .hardware_access(HardwareAccess::ReadOnly)
-            .docs(docs)
-        }),
-    )
+pub fn cpar<'cx>(dma: &mut PeripheralEntry<'cx>, channel: u8, entitlements: Entitlements) {
+    let mut cpar = dma.add_register(
+        Register::new(format!("cpar{channel}"), 0x10 + 0x14 * channel as u32).reset(0),
+    );
+
+    pa8(&mut cpar, entitlements);
+    pa16(&mut cpar, entitlements);
+    pa32(&mut cpar, entitlements);
 }

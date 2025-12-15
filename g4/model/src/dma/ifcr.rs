@@ -1,61 +1,22 @@
-use proto_hal_build::ir::{
-    access::Access,
-    structures::{
-        field::{Field, Numericity},
-        register::Register,
-        variant::Variant,
-    },
-};
+pub mod cgif;
+pub mod chtif;
+pub mod ctcif;
+pub mod cteif;
 
-pub fn generate() -> Register {
-    Register::new(
-        "ifcr",
-        0x04,
-        (0..8).flat_map(|i| {
-            let channel = i + 1;
+use proto_hal_model::{Register, model::PeripheralEntry};
 
-            [
-                Field::new(
-                    format!("cgif{channel}"),
-                    i * 4,
-                    1,
-                    Access::write(Numericity::enumerated([
-                        Variant::new("Noop", 0).inert(),
-                        Variant::new("Clear", 1),
-                    ])),
-                )
-                .docs(["Global interrupt flag clear"]),
-                Field::new(
-                    format!("ctcif{channel}"),
-                    i * 4 + 1,
-                    1,
-                    Access::write(Numericity::enumerated([
-                        Variant::new("Noop", 0).inert(),
-                        Variant::new("Clear", 1),
-                    ])),
-                )
-                .docs(["Transfer complete flag clear"]),
-                Field::new(
-                    format!("chtif{channel}"),
-                    i * 4 + 2,
-                    1,
-                    Access::write(Numericity::enumerated([
-                        Variant::new("Noop", 0).inert(),
-                        Variant::new("Clear", 1),
-                    ])),
-                )
-                .docs(["Half transfer flag clear"]),
-                Field::new(
-                    format!("cteif{channel}"),
-                    i * 4 + 3,
-                    1,
-                    Access::write(Numericity::enumerated([
-                        Variant::new("Noop", 0).inert(),
-                        Variant::new("Clear", 1),
-                    ])),
-                )
-                .docs(["Transfer error flag clear"]),
-            ]
-        }),
-    )
+use cgif::cgif;
+use chtif::chtif;
+use ctcif::ctcif;
+use cteif::cteif;
+
+pub fn ifcr<'cx>(dma: &mut PeripheralEntry<'cx>) {
+    let mut ifcr = dma.add_register(Register::new("ifcr", 0x04));
+
+    for i in 0..8 {
+        cgif(&mut ifcr, i);
+        ctcif(&mut ifcr, i);
+        chtif(&mut ifcr, i);
+        cteif(&mut ifcr, i);
+    }
 }

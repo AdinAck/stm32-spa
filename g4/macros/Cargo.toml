@@ -5,7 +5,8 @@ edition = "2024"
 
 [dependencies]
 model = { package = "stm32g4-spa-model", path = "../model" }
-proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
+# proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
+proto-hal-build = { path = "/Users/adinack/Projects/proto-hal/build", features = ["macros"] }
 proto-hal-macros = { git = "https://github.com/adinack/proto-hal" }
 
 

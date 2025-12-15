@@ -11,36 +11,51 @@ pub mod vrefbuf;
 use proto_hal_model::{Interrupt, Model};
 
 use crate::{
-    cordic::cordic, crc::crc, exti::exti, gpio::gpio, rcc::rcc, syscfg::syscfg, vrefbuf::vrefbuf,
+    cordic::cordic, crc::crc, dma::dma, dmamux::dmamux, exti::exti, gpio::gpio, rcc::rcc,
+    syscfg::syscfg, vrefbuf::vrefbuf,
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct Configuration {
     extra_interrupts: bool,
+    dma_channels: u8,
+}
+
+impl Default for Configuration {
+    fn default() -> Self {
+        Self {
+            extra_interrupts: false,
+            dma_channels: 6,
+        }
+    }
 }
 
 impl Configuration {
     pub fn g431() -> Self {
         Self {
             extra_interrupts: false,
+            dma_channels: 6,
         }
     }
 
     pub fn g441() -> Self {
         Self {
             extra_interrupts: false,
+            dma_channels: 6,
         }
     }
 
     pub fn g474() -> Self {
         Self {
             extra_interrupts: true,
+            dma_channels: 8,
         }
     }
 
     pub fn g484() -> Self {
         Self {
             extra_interrupts: true,
+            dma_channels: 8,
         }
     }
 }
@@ -171,6 +186,19 @@ pub fn model(config: Configuration) -> Model {
     cordic(&mut model, rcc.ahb1enr.cordicen);
     crc(&mut model, rcc.ahb1enr.crcen);
     vrefbuf(&mut model, rcc.apb2enr.syscfgen);
+    dma(
+        &mut model,
+        dma::Instance::Dma1,
+        config.dma_channels,
+        rcc.ahb1enr.dma1en,
+    );
+    dma(
+        &mut model,
+        dma::Instance::Dma2,
+        config.dma_channels,
+        rcc.ahb1enr.dma2en,
+    );
+    dmamux(&mut model, 2, config.dma_channels, rcc.ahb1enr.dmamux1en);
 
     model
 }
