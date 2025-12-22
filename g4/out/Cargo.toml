@@ -60,6 +60,10 @@ harness = false
 name = "crc"
 harness = false
 
+[[test]]
+name = "dma"
+harness = false
+
 [profile.dev]
 debug = true
 opt-level = "z"

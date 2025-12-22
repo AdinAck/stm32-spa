@@ -5,7 +5,7 @@ use crate::rcc::enr::add_field;
 pub struct Output {
     pub dma1en: Entitlement,
     pub dma2en: Entitlement,
-    pub dmamuxen: Entitlement,
+    pub dmamux1en: Entitlement,
     pub cordicen: Entitlement,
     pub fmacen: Entitlement,
     pub flashen: Entitlement,
@@ -18,7 +18,7 @@ pub fn ahb1enr<'cx>(rcc: &mut PeripheralEntry<'cx>) -> Output {
     Output {
         dma1en: add_field(&mut ahb1enr, Field::new("dma1en", 0, 1)),
         dma2en: add_field(&mut ahb1enr, Field::new("dma2en", 1, 1)),
-        dmamuxen: add_field(&mut ahb1enr, Field::new("dmamux1en", 2, 1)),
+        dmamux1en: add_field(&mut ahb1enr, Field::new("dmamux1en", 2, 1)),
         cordicen: add_field(&mut ahb1enr, Field::new("cordicen", 3, 1)),
         fmacen: add_field(&mut ahb1enr, Field::new("fmacen", 4, 1)),
         flashen: add_field(&mut ahb1enr, Field::new("flashen", 8, 1)),
