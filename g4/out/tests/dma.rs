@@ -8,7 +8,7 @@ use panic_probe as _;
 mod tests {
     use core::sync::atomic::{Ordering, fence};
 
-    use defmt::{assert_eq, panic, println};
+    use defmt::{assert, assert_eq};
     use fixed::types::I1F31;
     use stm32g4_spa as hal;
 
@@ -17,7 +17,7 @@ mod tests {
     #[test]
     fn basic() {
         const N: usize = 2;
-        static DST: [u32; N] = [0; N];
+        static mut DST: [u32; N] = [0; N];
 
         let p = unsafe { hal::assume_reset() };
 
@@ -32,13 +32,18 @@ mod tests {
 
             cortex_m::asm::delay(2);
 
-            // cordic
-            let cordic = hal::unmask! {
+            let (cordic, mut dma1, dmamux) = hal::unmask! {
                 cordic(p.cordic),
                 rcc::ahb1enr::cordicen(cordicen),
+                dma1(p.dma1),
+                rcc::ahb1enr::dma1en(dma1en),
+                dmamux(p.dmamux),
+                rcc::ahb1enr::dmamux1en(dma1muxen),
             };
 
+            // cordic
             hal::modify! {
+                @critical_section(cs),
                 cordic::csr {
                     func(cordic.csr.func) => Sqrt,
                     scale(&cordic.csr.scale),
@@ -54,13 +59,10 @@ mod tests {
             };
 
             // dma
-            let mut dma1 = hal::unmask! {
-                dma1(p.dma1),
-                rcc::ahb1enr::dma1en(dma1en),
-            };
 
             // configure channel
             let (.., psize, msize) = hal::modify! {
+                @critical_section(cs),
                 dma1::ccr0 {
                     dir(dma1.ccr0.dir) => ReadFromPeripheral,
                     en(&dma1.ccr0.en),
@@ -103,67 +105,87 @@ mod tests {
             // transfer length
             hal::write! {
                 dma1 {
-                    cndtr0::ndt(&mut dma1.cndtr0.ndt)
+                    cndtr0::ndt(dma1.cndtr0.ndt) => { N as u16 },
+                    ccr0::en(&dma1.ccr0.en),
                 }
             };
-            dma1::cndtr0::write(|w| w.ndt(&mut dma1.cndtr0.ndt, N as u32, &dma1.ccr0.en));
 
             // mux
-            let dmamux = p.dmamux.unmask(dmamux1en);
 
             // assign request source
-            dmamux::c0cr::modify_in_cs(cs, |_, w| w.dmareq(dmamux.c0cr.dmareq).cordic_read());
+            hal::modify! {
+                @critical_section(cs),
+                dmamux::c0cr::dmareq(dmamux.c0cr.dmareq) => CordicRead,
+            };
 
             fence(Ordering::SeqCst);
 
             // enable transfer
-            dma1::ccr0::modify_in_cs(cs, |_, w| w.en(dma1.ccr0.en).enabled());
+            // TODO: this should require ndt as well to make both Dynamic
+            hal::modify! {
+                @critical_section(cs),
+                dma1 {
+                    ccr0::en(dma1.ccr0.en) => Enabled,
+                }
+            };
 
             fence(Ordering::SeqCst);
 
-            let ccr0_read = unsafe { dma1::ccr0::read_untracked() };
+            let (dma1_read, dmamux_read) = unsafe {
+                hal::read_untracked! {
+                    dma1::ccr0,
+                    dmamux::c0cr
+                }
+            };
 
-            assert!(ccr0_read.dir().is_read_from_peripheral());
-            assert!(ccr0_read.minc().is_enabled());
-            assert!(ccr0_read.mem2mem().is_disabled());
-            assert!(ccr0_read.en().is_enabled());
+            assert!(dma1_read.ccr0.dir.is_read_from_peripheral());
+            assert!(dma1_read.ccr0.minc.is_enabled());
+            assert!(dma1_read.ccr0.mem2mem.is_disabled());
+            assert!(dma1_read.ccr0.en.is_enabled());
+            assert!(dmamux_read.c0cr.dmareq.is_cordic_read());
 
-            let c0cr_read = unsafe { dmamux::c0cr::read_untracked() };
+            let isr = hal::read!(
+                dma1::isr {
+                    tcif1(&mut dma1.isr.tcif1),
+                    htif1(&mut dma1.isr.htif1),
+                    teif1(&mut dma1.isr.teif1),
+                }
+            );
 
-            assert!(c0cr_read.dmareq().is_cordic_read());
-
-            fence(Ordering::SeqCst);
+            assert!(isr.htif1.is_no_event());
+            assert!(isr.tcif1.is_no_event());
+            assert!(isr.teif1.is_no_event());
 
             for value in [0.25, 0.16] {
-                cordic::wdata::write(|w| w.arg(&mut arg, I1F31::from_num(value).to_bits() as u32));
+                hal::write! {
+                    cordic::wdata::arg(&mut arg) => I1F31::from_num(value).to_bits() as u32,
+                };
             }
 
-            let mut count = 0;
+            cortex_m::asm::delay(100);
 
-            loop {
-                if dma1::isr::read().tcif1(&mut dma1.isr.tcif1).is_occurred() {
-                    break;
+            let isr = hal::read!(
+                dma1::isr {
+                    tcif1(&mut dma1.isr.tcif1),
+                    htif1(&mut dma1.isr.htif1),
+                    teif1(&mut dma1.isr.teif1),
                 }
+            );
 
-                let rgsr_read = unsafe { dma1::isr::read_untracked() };
-                assert!(rgsr_read.teif1().is_no_event());
-
-                if count > 100 {
-                    println!(
-                        "{}",
-                        unsafe { cordic::csr::read_untracked() }.rrdy().is_ready()
-                    );
-                    panic!("DMA transfer stalled.");
-                }
-
-                count += 1;
-                cortex_m::asm::delay(100_000);
-            }
+            assert!(isr.htif1.is_occurred());
+            assert!(isr.tcif1.is_occurred());
+            assert!(isr.teif1.is_no_event());
 
             fence(Ordering::SeqCst);
 
-            assert_eq!(I1F31::from_bits(DST[0] as _).to_num::<f32>(), 0.5);
-            assert_eq!(I1F31::from_bits(DST[1] as _).to_num::<f32>(), 0.4);
+            assert_eq!(
+                I1F31::from_bits(unsafe { DST[0] } as _).to_num::<f32>(),
+                0.4999994
+            );
+            assert_eq!(
+                I1F31::from_bits(unsafe { DST[1] } as _).to_num::<f32>(),
+                0.39999902
+            );
         });
     }
 }

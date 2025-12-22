@@ -1,7 +1,7 @@
 use proto_hal_model::{Register, model::PeripheralEntry};
 
 use crate::dmamux::ccr::{
-    ege::ege, nbreq::nbreq, se::se, soie::soie, spol::spol, sync_id::sync_id,
+    dmareq::dmareq, ege::ege, nbreq::nbreq, se::se, soie::soie, spol::spol, sync_id::sync_id,
 };
 
 pub mod dmareq;
@@ -16,6 +16,7 @@ pub fn ccr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) {
     let mut ccr =
         dmamux.add_register(Register::new(format!("c{channel}cr"), channel as u32 * 4).reset(0));
 
+    dmareq(&mut ccr);
     soie(&mut ccr);
     let ege = ege(&mut ccr);
     let se = se(&mut ccr);
