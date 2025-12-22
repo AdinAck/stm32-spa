@@ -6,7 +6,7 @@ use panic_probe as _;
 
 #[defmt_test::tests]
 mod tests {
-    use core::sync::atomic::{Ordering, fence};
+    use core::sync::atomic::{Ordering, compiler_fence};
 
     use defmt::{assert, assert_eq};
     use fixed::types::I1F31;
@@ -118,7 +118,7 @@ mod tests {
                 dmamux::c0cr::dmareq(dmamux.c0cr.dmareq) => CordicRead,
             };
 
-            fence(Ordering::SeqCst);
+            compiler_fence(Ordering::SeqCst);
 
             // enable transfer
             // TODO: this should require ndt as well to make both Dynamic
@@ -129,7 +129,7 @@ mod tests {
                 }
             };
 
-            fence(Ordering::SeqCst);
+            compiler_fence(Ordering::SeqCst);
 
             let (dma1_read, dmamux_read) = unsafe {
                 hal::read_untracked! {
@@ -176,7 +176,7 @@ mod tests {
             assert!(isr.tcif1.is_occurred());
             assert!(isr.teif1.is_no_event());
 
-            fence(Ordering::SeqCst);
+            compiler_fence(Ordering::SeqCst);
 
             assert_eq!(
                 I1F31::from_bits(unsafe { DST[0] } as _).to_num::<f32>(),

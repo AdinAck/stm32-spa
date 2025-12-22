@@ -38,8 +38,7 @@ probe-plotter = { git = "https://github.com/usbalbin/probe-plotter" }
 
 [build-dependencies]
 model = { package = "stm32g4-spa-model", path = "../model" }
-# proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
-proto-hal-build = { path = "/Users/adinack/Projects/proto-hal/build", features = ["macros"] }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
 
 [lib]
 test = false

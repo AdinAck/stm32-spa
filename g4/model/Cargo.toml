@@ -4,5 +4,4 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# proto-hal-model = { git = "https://github.com/adinack/proto-hal" }
-proto-hal-model = { path = "/Users/adinack/Projects/proto-hal/model" }
+proto-hal-model = { git = "https://github.com/adinack/proto-hal" }
