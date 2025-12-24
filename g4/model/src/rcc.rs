@@ -1,17 +1,15 @@
-pub mod enr;
+pub mod ahb1enr;
+pub mod ahb2enr;
+pub mod apb2enr;
 
 use proto_hal_model::{Model, Peripheral};
 
-use crate::rcc::enr::{
-    ahb1::{self, ahb1enr},
-    ahb2::{self, ahb2enr},
-    apb2::{self, apb2enr},
-};
+use crate::rcc::{ahb1enr::ahb1enr, ahb2enr::ahb2enr, apb2enr::apb2enr};
 
 pub struct Output {
-    pub ahb1enr: ahb1::Output,
-    pub ahb2enr: ahb2::Output,
-    pub apb2enr: apb2::Output,
+    pub ahb1enr: ahb1enr::Output,
+    pub ahb2enr: ahb2enr::Output,
+    pub apb2enr: apb2enr::Output,
 }
 
 pub fn rcc(model: &mut Model) -> Output {
