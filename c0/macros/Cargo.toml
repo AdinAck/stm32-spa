@@ -1,0 +1,16 @@
+[package]
+name = "stm32c0-spa-macros"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+model = { package = "stm32c0-spa-model", path = "../model" }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
+proto-hal-macros = { git = "https://github.com/adinack/proto-hal" }
+
+
+[lib]
+proc-macro = true
+
+[features]
+c092 = []
