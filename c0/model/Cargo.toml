@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 proto-hal-model = { git = "https://github.com/adinack/proto-hal" }
+peripherals = { package = "stm32-spa-peripherals", path = "../../peripherals" }

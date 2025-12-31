@@ -1,4 +1,8 @@
+pub mod rcc;
+
 use proto_hal_model::Model;
+
+use crate::rcc::rcc;
 
 // TODO
 #[derive(Debug, Default)]
@@ -11,5 +15,9 @@ impl Configuration {
 }
 
 pub fn model(_config: Configuration) -> Model {
-    Model::new()
+    let mut model = Model::new();
+
+    rcc(&mut model);
+
+    model
 }
