@@ -9,7 +9,8 @@ pub mod ospeedr;
 pub mod otyper;
 pub mod pupdr;
 
-use proto_hal_model::{Entitlement, Model, Peripheral};
+use peripherals::rcc::enr;
+use proto_hal_model::{Model, Peripheral};
 
 use crate::gpio::{
     afr::afr, idr::idr, moder::moder, odr::odr, ospeedr::ospeedr, otyper::otyper, pupdr::pupdr,
@@ -52,10 +53,10 @@ impl Instance {
     }
 }
 
-pub fn gpio(model: &mut Model, instance: Instance, gpioen: Entitlement) {
+pub fn gpio(model: &mut Model, instance: Instance, gpioen: enr::Output) {
     let mut gpio = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
-    gpio.ontological_entitlements([gpioen]);
+    gpio.ontological_entitlements([gpioen.enabled]);
 
     moder(&mut gpio, instance);
     otyper(&mut gpio);

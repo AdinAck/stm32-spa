@@ -1,8 +1,8 @@
 [package]
-name = "stm32g4-spa-model"
+name = "stm32-spa-peripherals"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
 proto-hal-model = { git = "https://github.com/adinack/proto-hal" }
-peripherals = { package = "stm32-spa-peripherals", path = "../../peripherals" }
+quote = "1.0.42"

@@ -2,16 +2,17 @@ mod csr;
 mod rdata;
 mod wdata;
 
-use proto_hal_model::{Entitlement, Model, Peripheral};
+use peripherals::rcc::enr;
+use proto_hal_model::{Model, Peripheral};
 
 use csr::csr;
 use rdata::rdata;
 use wdata::wdata;
 
-pub fn cordic(model: &mut Model, cordicen: Entitlement) {
+pub fn cordic(model: &mut Model, cordicen: enr::Output) {
     let mut cordic = model.add_peripheral(Peripheral::new("cordic", 0x4002_0c00));
 
-    cordic.ontological_entitlements([cordicen]);
+    cordic.ontological_entitlements([cordicen.enabled]);
 
     let csr = csr(&mut cordic);
 
