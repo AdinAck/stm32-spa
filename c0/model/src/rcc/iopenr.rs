@@ -1,5 +1,5 @@
 use peripherals::{prelude::*, rcc::enr};
-use proto_hal_model::model::PeripheralEntry;
+use phm::model::PeripheralEntry;
 
 pub struct Output {
     pub gpioaen: enr::Output,

@@ -1,7 +1,7 @@
 pub mod ahbenr;
 pub mod iopenr;
 
-use proto_hal_model::{Model, Peripheral};
+use phm::{Model, Peripheral};
 
 use crate::rcc::{ahbenr::ahbenr, iopenr::iopenr};
 

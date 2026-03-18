@@ -1,5 +1,5 @@
 use peripherals::{prelude::*, rcc::enr};
-use proto_hal_model::{Field, model::PeripheralEntry};
+use phm::{Field, model::PeripheralEntry};
 
 pub struct Output {
     pub dma1en: enr::Output,

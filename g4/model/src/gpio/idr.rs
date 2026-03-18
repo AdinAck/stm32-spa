@@ -1,4 +1,4 @@
-use proto_hal_model::{Register, model::PeripheralEntry};
+use phm::{Register, model::PeripheralEntry};
 
 use crate::gpio::idr::id::id;
 

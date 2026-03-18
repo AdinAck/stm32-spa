@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn exti<'cx>(exticr: &mut RegisterEntry<'cx>, i: u8) {
     let mut exti = exticr.add_store_field(Field::new(format!("exti{i}"), (i % 4) * 4, 4));

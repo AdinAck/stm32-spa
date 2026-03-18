@@ -32,7 +32,7 @@ cortex-m-spa = { git = "https://github.com/adinack/cortex-m-spa", features = [
 
 [build-dependencies]
 model = { package = "stm32c0-spa-model", path = "../model" }
-proto-hal-build = { git = "https://github.com/adinack/proto-hal" }
+phb = { package = "proto-hal-build", git = "https://github.com/adinack/proto-hal" }
 
 [lib]
 test = false

@@ -2,7 +2,7 @@ pub mod ahb1enr;
 pub mod ahb2enr;
 pub mod apb2enr;
 
-use proto_hal_model::{Model, Peripheral};
+use phm::{Model, Peripheral};
 
 use crate::rcc::{ahb1enr::ahb1enr, ahb2enr::ahb2enr, apb2enr::apb2enr};
 

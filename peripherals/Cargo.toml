@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-proto-hal-model = { git = "https://github.com/adinack/proto-hal" }
+phm = { package = "proto-hal-model", git = "https://github.com/adinack/proto-hal" }
 quote = "1.0.42"

@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn mode<'cx>(moder: &mut RegisterEntry<'cx>, i: u8) {
     let mut mode = moder.add_store_field(Field::new(format!("mode{i}"), i * 2, 2));

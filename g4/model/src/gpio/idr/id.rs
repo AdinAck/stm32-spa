@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn id<'cx>(idr: &mut RegisterEntry<'cx>, i: u8) {
     let mut id = idr.add_read_field(Field::new(format!("id{i}"), i, 1));

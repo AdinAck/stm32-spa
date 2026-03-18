@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn ospeed<'cx>(ospeedr: &mut RegisterEntry<'cx>, i: u8) {
     let mut ospeed = ospeedr.add_store_field(Field::new(format!("ospeed{i}"), i * 2, 2));

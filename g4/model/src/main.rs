@@ -1,6 +1,6 @@
 use stm32g4_spa_model::{Configuration, model};
 
-fn main() {
+fn main() -> phm::Result<()> {
     for variant in [
         Configuration::g431(),
         Configuration::g441(),
@@ -8,6 +8,8 @@ fn main() {
         Configuration::g484(),
     ] {
         println!("=== Variant: {variant:?} ===");
-        proto_hal_model::validate(&model(variant));
+        phm::validate(&model(variant)?);
     }
+
+    Ok(())
 }

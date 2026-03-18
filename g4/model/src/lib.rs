@@ -6,7 +6,7 @@ pub mod rcc;
 pub mod syscfg;
 pub mod vrefbuf;
 
-use proto_hal_model::{Interrupt, Model};
+use phm::{Interrupt, Model};
 
 use crate::{
     cordic::cordic, crc::crc, exti::exti, gpio::gpio, rcc::rcc, syscfg::syscfg, vrefbuf::vrefbuf,
@@ -43,7 +43,7 @@ impl Configuration {
     }
 }
 
-pub fn model(config: Configuration) -> Model {
+pub fn model(config: Configuration) -> phm::Result<Model> {
     let extra_interrupts = |interrupt| {
         if config.extra_interrupts {
             interrupt
@@ -158,17 +158,17 @@ pub fn model(config: Configuration) -> Model {
     ]);
 
     let rcc = rcc(&mut model);
-    gpio(&mut model, gpio::Instance::A, rcc.ahb2enr.gpioaen);
-    gpio(&mut model, gpio::Instance::B, rcc.ahb2enr.gpioben);
-    gpio(&mut model, gpio::Instance::C, rcc.ahb2enr.gpiocen);
-    gpio(&mut model, gpio::Instance::D, rcc.ahb2enr.gpioden);
-    gpio(&mut model, gpio::Instance::E, rcc.ahb2enr.gpioeen);
-    gpio(&mut model, gpio::Instance::F, rcc.ahb2enr.gpiofen);
-    syscfg(&mut model, rcc.apb2enr.syscfgen);
+    gpio(&mut model, gpio::Instance::A, rcc.ahb2enr.gpioaen)?;
+    gpio(&mut model, gpio::Instance::B, rcc.ahb2enr.gpioben)?;
+    gpio(&mut model, gpio::Instance::C, rcc.ahb2enr.gpiocen)?;
+    gpio(&mut model, gpio::Instance::D, rcc.ahb2enr.gpioden)?;
+    gpio(&mut model, gpio::Instance::E, rcc.ahb2enr.gpioeen)?;
+    gpio(&mut model, gpio::Instance::F, rcc.ahb2enr.gpiofen)?;
+    syscfg(&mut model, rcc.apb2enr.syscfgen)?;
     exti(&mut model);
-    cordic(&mut model, rcc.ahb1enr.cordicen);
-    crc(&mut model, rcc.ahb1enr.crcen);
-    vrefbuf(&mut model, rcc.apb2enr.syscfgen);
+    cordic(&mut model, rcc.ahb1enr.cordicen)?;
+    crc(&mut model, rcc.ahb1enr.crcen)?;
+    vrefbuf(&mut model, rcc.apb2enr.syscfgen)?;
 
-    model
+    Ok(model)
 }

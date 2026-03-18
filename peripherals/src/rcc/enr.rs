@@ -10,7 +10,7 @@
 //! | Disabled | 0    |
 //! | Enabled  | 1    |
 
-use proto_hal_model::{
+use phm::{
     Entitlement, Field, Register, Variant,
     model::{PeripheralEntry, RegisterEntry},
 };

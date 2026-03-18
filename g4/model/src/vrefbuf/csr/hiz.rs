@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn hiz<'cx>(csr: &mut RegisterEntry<'cx>) {
     let mut hiz = csr.add_store_field(Field::new("hiz", 1, 1));
