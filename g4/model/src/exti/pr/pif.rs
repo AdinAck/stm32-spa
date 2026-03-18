@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn pif<'cx>(pr: &mut RegisterEntry<'cx>, i: u8, offset: u8) {
     let mut pif = pr.add_read_write_field(Field::new(format!("pif{i}"), offset, 1));

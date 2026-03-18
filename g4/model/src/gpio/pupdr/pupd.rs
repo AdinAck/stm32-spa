@@ -1,4 +1,4 @@
-use proto_hal_model::{Field, Variant, model::RegisterEntry};
+use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn pupd<'cx>(pupdr: &mut RegisterEntry<'cx>, i: u8) {
     let mut pupd = pupdr.add_store_field(Field::new(format!("pupd{i}"), i * 2, 2));

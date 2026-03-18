@@ -3,7 +3,7 @@ pub mod hiz;
 pub mod vrr;
 pub mod vrs;
 
-use proto_hal_model::{Register, model::PeripheralEntry};
+use phm::{Register, model::PeripheralEntry};
 
 use crate::vrefbuf::csr::{envr::envr, hiz::hiz, vrr::vrr, vrs::vrs};
 

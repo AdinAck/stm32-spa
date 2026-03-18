@@ -1,6 +1,6 @@
 pub mod em;
 
-use proto_hal_model::{Register, model::PeripheralEntry};
+use phm::{Register, model::PeripheralEntry};
 
 use crate::exti::emr::em::em;
 

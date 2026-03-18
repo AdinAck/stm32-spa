@@ -1,6 +1,6 @@
 pub mod mode;
 
-use proto_hal_model::{Register, model::PeripheralEntry};
+use phm::{Register, model::PeripheralEntry};
 
 use crate::gpio::{Instance, moder::mode::mode};
 

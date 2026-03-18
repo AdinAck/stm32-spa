@@ -1,6 +1,6 @@
 pub mod rcc;
 
-use proto_hal_model::Model;
+use phm::Model;
 
 use crate::rcc::rcc;
 
@@ -14,10 +14,10 @@ impl Configuration {
     }
 }
 
-pub fn model(_config: Configuration) -> Model {
+pub fn model(_config: Configuration) -> phm::Result<Model> {
     let mut model = Model::new();
 
     rcc(&mut model);
 
-    model
+    Ok(model)
 }

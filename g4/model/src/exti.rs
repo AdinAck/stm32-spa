@@ -4,7 +4,7 @@ pub mod imr;
 pub mod pr;
 pub mod rtsr;
 
-use proto_hal_model::{Model, Peripheral};
+use phm::{Model, Peripheral};
 
 use crate::exti::{emr::emr, ftsr::ftsr, imr::imr, pr::pr, rtsr::rtsr};
 

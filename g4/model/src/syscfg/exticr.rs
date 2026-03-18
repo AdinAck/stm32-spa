@@ -1,6 +1,6 @@
 pub mod exti;
 
-use proto_hal_model::{Register, model::PeripheralEntry};
+use phm::{Register, model::PeripheralEntry};
 
 use crate::syscfg::exticr::exti::exti;
 
