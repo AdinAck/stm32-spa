@@ -4,16 +4,16 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["interrupts"]
+default = ["rt"]
 g431 = ["macros/g431"]
 g441 = ["macros/g441"]
 g474 = ["macros/g474"]
 g484 = ["macros/g484"]
 
-interrupts = []
+rt = ["cortex-m-rt/device"]
 
 [dependencies]
-cortex-m-rt = { version = "0.7.3", features = ["device"] }
+cortex-m-rt = { version = "0.7.3" }
 proto-hal = { git = "https://github.com/adinack/proto-hal" }
 macros = { package = "stm32g4-spa-macros", path = "../macros" }
 
