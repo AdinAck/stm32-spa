@@ -8,7 +8,7 @@ use phm::{Register, model::PeripheralEntry};
 
 use crate::dmamux::rgcr::{ge::ge, gnbreq::gnbreq, gpol::gpol, oie::oie, sig_id::sig_id};
 
-pub fn rgcr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) -> phm::Result<()> {
+pub fn rgcr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) {
     let mut rgcr = dmamux
         .add_register(Register::new(format!("rg{channel}cr"), 0x100 + channel as u32 * 4).reset(0));
 
@@ -16,7 +16,5 @@ pub fn rgcr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) -> phm::Result<
     oie(&mut rgcr);
     let ge = ge(&mut rgcr);
     gpol(&mut rgcr);
-    gnbreq(&mut rgcr, ge.disabled)?;
-
-    Ok(())
+    gnbreq(&mut rgcr, ge.disabled);
 }

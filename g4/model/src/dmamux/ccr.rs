@@ -12,7 +12,7 @@ pub mod soie;
 pub mod spol;
 pub mod sync_id;
 
-pub fn ccr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) -> phm::Result<()> {
+pub fn ccr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) {
     let mut ccr =
         dmamux.add_register(Register::new(format!("c{channel}cr"), channel as u32 * 4).reset(0));
 
@@ -21,8 +21,6 @@ pub fn ccr<'cx>(dmamux: &mut PeripheralEntry<'cx>, channel: u8) -> phm::Result<(
     let ege = ege(&mut ccr);
     let se = se(&mut ccr);
     spol(&mut ccr);
-    nbreq(&mut ccr, nbreq::Entitlements { ege, se })?;
+    nbreq(&mut ccr, nbreq::Entitlements { ege, se });
     sync_id(&mut ccr);
-
-    Ok(())
 }

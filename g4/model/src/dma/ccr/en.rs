@@ -6,7 +6,7 @@ pub struct Output {
     pub enabled: Entitlement,
 }
 
-pub fn en<'cx>(ccr: &mut RegisterEntry<'cx>) -> phm::Result<Output> {
+pub fn en<'cx>(ccr: &mut RegisterEntry<'cx>) -> Output {
     let mut en = ccr.add_volatile_store_field(Field::new("en", 0, 1).docs(["Channel enable"]));
 
     let disabled = en
@@ -16,7 +16,7 @@ pub fn en<'cx>(ccr: &mut RegisterEntry<'cx>) -> phm::Result<Output> {
         .add_variant(Variant::new("Enabled", 1))
         .make_entitlement();
 
-    en.hardware_write_entitlements([[enabled]])?;
+    en.hardware_write_entitlements([[enabled]]);
 
-    Ok(Output { disabled, enabled })
+    Output { disabled, enabled }
 }

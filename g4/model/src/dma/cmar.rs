@@ -15,18 +15,12 @@ pub struct Entitlements {
     pub msize: msize::Output,
 }
 
-pub fn cmar<'cx>(
-    dma: &mut PeripheralEntry<'cx>,
-    channel: u8,
-    entitlements: Entitlements,
-) -> phm::Result<()> {
+pub fn cmar<'cx>(dma: &mut PeripheralEntry<'cx>, channel: u8, entitlements: Entitlements) {
     let mut cmar = dma.add_register(
         Register::new(format!("cmar{channel}"), 0x14 + 0x14 * channel as u32).reset(0),
     );
 
-    ma8(&mut cmar, entitlements)?;
-    ma16(&mut cmar, entitlements)?;
-    ma32(&mut cmar, entitlements)?;
-
-    Ok(())
+    ma8(&mut cmar, entitlements);
+    ma16(&mut cmar, entitlements);
+    ma32(&mut cmar, entitlements);
 }

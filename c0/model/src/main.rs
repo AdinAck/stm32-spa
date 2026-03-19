@@ -1,7 +1,5 @@
 use stm32c0_spa_model::{Configuration, model};
 
-fn main() -> phm::Result<()> {
-    phm::validate(&model(Configuration::c092())?);
-
-    Ok(())
+fn main() {
+    phm::validate(model(Configuration::c092()));
 }

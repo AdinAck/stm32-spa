@@ -1,7 +1,7 @@
 pub mod ahbenr;
 pub mod iopenr;
 
-use phm::{Model, Peripheral};
+use phm::{ModelBuilder, Peripheral};
 
 use crate::rcc::{ahbenr::ahbenr, iopenr::iopenr};
 
@@ -10,7 +10,7 @@ pub struct Output {
     pub ahbenr: ahbenr::Output,
 }
 
-pub fn rcc(model: &mut Model) -> Output {
+pub fn rcc(model: &mut ModelBuilder) -> Output {
     let mut rcc = model.add_peripheral(Peripheral::new("rcc", 0x4002_1000));
 
     Output {
