@@ -4,13 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [features]
-default = ["interrupts"]
+default = ["rt"]
 c092 = ["macros/c092"]
 
-interrupts = []
+rt = ["cortex-m-rt/device"]
 
 [dependencies]
-cortex-m-rt = { version = "0.7.3", features = ["device"] }
+cortex-m-rt = { version = "0.7.3" }
 proto-hal = { git = "https://github.com/adinack/proto-hal" }
 macros = { package = "stm32c0-spa-macros", path = "../macros" }
 
