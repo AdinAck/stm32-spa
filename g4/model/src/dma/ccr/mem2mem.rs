@@ -7,16 +7,14 @@ pub struct Entitlements {
     pub circ: circ::Output,
 }
 
-pub fn mem2mem<'cx>(ccr: &mut RegisterEntry<'cx>, entitlements: Entitlements) -> phm::Result<()> {
+pub fn mem2mem<'cx>(ccr: &mut RegisterEntry<'cx>, entitlements: Entitlements) {
     let mut mem2mem =
         ccr.add_store_field(Field::new("mem2mem", 14, 1).docs(["Memory to memory mode"]));
 
-    mem2mem.write_entitlements([[entitlements.en.disabled]])?;
+    mem2mem.write_entitlements([[entitlements.en.disabled]]);
 
     mem2mem.add_variant(Variant::new("Disabled", 0));
     mem2mem
         .add_variant(Variant::new("Enabled", 1))
-        .statewise_entitlements([[entitlements.circ.disabled]])?;
-
-    Ok(())
+        .statewise_entitlements([[entitlements.circ.disabled]]);
 }

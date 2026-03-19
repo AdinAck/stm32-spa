@@ -2,7 +2,7 @@ pub mod arg;
 pub mod arg0;
 pub mod arg1;
 
-use phm::{Entitlement, Error, Register, model::PeripheralEntry};
+use phm::{Entitlement, Register, model::PeripheralEntry};
 
 use arg::arg;
 use arg0::arg0;
@@ -14,15 +14,10 @@ pub struct Entitlements {
     pub nargs_one: Entitlement,
 }
 
-pub fn wdata<'cx>(
-    cordic: &mut PeripheralEntry<'cx>,
-    entitlements: Entitlements,
-) -> Result<(), Error> {
+pub fn wdata<'cx>(cordic: &mut PeripheralEntry<'cx>, entitlements: Entitlements) {
     let mut wdata = cordic.add_register(Register::new("wdata", 4));
 
-    arg(&mut wdata, entitlements.argsize_q31)?;
-    arg0(&mut wdata, entitlements.argsize_q15, entitlements.nargs_one)?;
-    arg1(&mut wdata, entitlements.argsize_q15, entitlements.nargs_one)?;
-
-    Ok(())
+    arg(&mut wdata, entitlements.argsize_q31);
+    arg0(&mut wdata, entitlements.argsize_q15, entitlements.nargs_one);
+    arg1(&mut wdata, entitlements.argsize_q15, entitlements.nargs_one);
 }

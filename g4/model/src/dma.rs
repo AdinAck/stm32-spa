@@ -6,7 +6,7 @@ pub mod ifcr;
 pub mod isr;
 
 use peripherals::rcc::enr;
-use phm::{Model, Peripheral};
+use phm::{ModelBuilder, Peripheral};
 
 use crate::dma::{ccr::ccr, cmar::cmar, cndtr::cndtr, cpar::cpar, ifcr::ifcr, isr::isr};
 
@@ -32,22 +32,17 @@ impl Instance {
     }
 }
 
-pub fn dma(
-    model: &mut Model,
-    instance: Instance,
-    channels: u8,
-    dmaen: enr::Output,
-) -> phm::Result<()> {
+pub fn dma(model: &mut ModelBuilder, instance: Instance, channels: u8, dmaen: enr::Output) {
     let mut dma = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
-    dma.ontological_entitlements([[dmaen.enabled]])?;
+    dma.ontological_entitlements([[dmaen.enabled]]);
 
     isr(&mut dma);
     ifcr(&mut dma);
 
     for i in 0..channels {
-        let ccr = ccr(&mut dma, i)?;
-        cndtr(&mut dma, i, cndtr::Entitlements { en: ccr.en })?;
+        let ccr = ccr(&mut dma, i);
+        cndtr(&mut dma, i, cndtr::Entitlements { en: ccr.en });
         cpar(
             &mut dma,
             i,
@@ -55,7 +50,7 @@ pub fn dma(
                 en: ccr.en,
                 psize: ccr.psize,
             },
-        )?;
+        );
         cmar(
             &mut dma,
             i,
@@ -63,8 +58,6 @@ pub fn dma(
                 en: ccr.en,
                 msize: ccr.msize,
             },
-        )?;
+        );
     }
-
-    Ok(())
 }

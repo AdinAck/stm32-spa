@@ -15,18 +15,12 @@ pub struct Entitlements {
     pub psize: psize::Output,
 }
 
-pub fn cpar<'cx>(
-    dma: &mut PeripheralEntry<'cx>,
-    channel: u8,
-    entitlements: Entitlements,
-) -> phm::Result<()> {
+pub fn cpar<'cx>(dma: &mut PeripheralEntry<'cx>, channel: u8, entitlements: Entitlements) {
     let mut cpar = dma.add_register(
         Register::new(format!("cpar{channel}"), 0x10 + 0x14 * channel as u32).reset(0),
     );
 
-    pa8(&mut cpar, entitlements)?;
-    pa16(&mut cpar, entitlements)?;
-    pa32(&mut cpar, entitlements)?;
-
-    Ok(())
+    pa8(&mut cpar, entitlements);
+    pa16(&mut cpar, entitlements);
+    pa32(&mut cpar, entitlements);
 }

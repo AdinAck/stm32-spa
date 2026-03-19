@@ -32,23 +32,23 @@ pub struct Output {
     pub msize: msize::Output,
 }
 
-pub fn ccr<'cx>(dma: &mut PeripheralEntry<'cx>, channel: u8) -> phm::Result<Output> {
+pub fn ccr<'cx>(dma: &mut PeripheralEntry<'cx>, channel: u8) -> Output {
     let mut ccr = dma.add_register(
         Register::new(format!("ccr{channel}"), 0x08 + 0x14 * channel as u32).reset(0),
     );
 
-    let en = en(&mut ccr)?;
-    tcie(&mut ccr, en)?;
-    htie(&mut ccr, en)?;
-    teie(&mut ccr, en)?;
-    dir(&mut ccr, en)?;
-    let circ = circ(&mut ccr, en)?;
-    pinc(&mut ccr, en)?;
-    minc(&mut ccr, en)?;
-    let psize = psize(&mut ccr, en)?;
-    let msize = msize(&mut ccr, en)?;
-    pl(&mut ccr, en)?;
-    mem2mem(&mut ccr, mem2mem::Entitlements { en, circ })?;
+    let en = en(&mut ccr);
+    tcie(&mut ccr, en);
+    htie(&mut ccr, en);
+    teie(&mut ccr, en);
+    dir(&mut ccr, en);
+    let circ = circ(&mut ccr, en);
+    pinc(&mut ccr, en);
+    minc(&mut ccr, en);
+    let psize = psize(&mut ccr, en);
+    let msize = msize(&mut ccr, en);
+    pl(&mut ccr, en);
+    mem2mem(&mut ccr, mem2mem::Entitlements { en, circ });
 
-    Ok(Output { en, psize, msize })
+    Output { en, psize, msize }
 }

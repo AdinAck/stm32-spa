@@ -8,7 +8,7 @@ pub struct Entitlements {
     pub n4: Entitlement,
 }
 
-pub fn func<'cx>(csr: &mut RegisterEntry<'cx>, entitlements: Entitlements) -> phm::Result<()> {
+pub fn func<'cx>(csr: &mut RegisterEntry<'cx>, entitlements: Entitlements) {
     let mut func = csr.add_store_field(Field::new("func", 0, 4));
 
     let variants = [
@@ -39,8 +39,6 @@ pub fn func<'cx>(csr: &mut RegisterEntry<'cx>, entitlements: Entitlements) -> ph
 
     for (bits, (ident, entitlements)) in variants {
         let mut variant = func.add_variant(Variant::new(ident, bits as _));
-        variant.statewise_entitlements([entitlements])?;
+        variant.statewise_entitlements([entitlements]);
     }
-
-    Ok(())
 }

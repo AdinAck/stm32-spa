@@ -9,10 +9,10 @@ pub struct Output {
     pub bits32: Entitlement,
 }
 
-pub fn psize<'cx>(ccr: &mut RegisterEntry<'cx>, en: en::Output) -> phm::Result<Output> {
+pub fn psize<'cx>(ccr: &mut RegisterEntry<'cx>, en: en::Output) -> Output {
     let mut psize = ccr.add_store_field(Field::new("psize", 8, 2).docs(["Peripheral size"]));
 
-    psize.write_entitlements([[en.disabled]])?;
+    psize.write_entitlements([[en.disabled]]);
 
     let bits8 = psize
         .add_variant(Variant::new("Bits8", 0))
@@ -24,9 +24,9 @@ pub fn psize<'cx>(ccr: &mut RegisterEntry<'cx>, en: en::Output) -> phm::Result<O
         .add_variant(Variant::new("Bits32", 2))
         .make_entitlement();
 
-    Ok(Output {
+    Output {
         bits8,
         bits16,
         bits32,
-    })
+    }
 }
