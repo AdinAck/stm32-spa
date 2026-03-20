@@ -8,7 +8,7 @@ pub mod rcc;
 pub mod syscfg;
 pub mod vrefbuf;
 
-use phm::{Interrupt, ModelBuilder};
+use phm::{Composition, Interrupt};
 
 use crate::{
     cordic::cordic, crc::crc, dma::dma, dmamux::dmamux, exti::exti, gpio::gpio, rcc::rcc,
@@ -60,7 +60,7 @@ impl Configuration {
     }
 }
 
-pub fn model(config: Configuration) -> ModelBuilder {
+pub fn compose(config: Configuration) -> Composition {
     let extra_interrupts = |interrupt| {
         if config.extra_interrupts {
             interrupt
@@ -69,7 +69,7 @@ pub fn model(config: Configuration) -> ModelBuilder {
         }
     };
 
-    let mut model = ModelBuilder::new().with_interrupts([
+    let mut composition = Composition::new().with_interrupts([
         Interrupt::handler("WWDG").docs(["Window Watchdog"]),
         Interrupt::handler("PVD_PVM").docs(["PVD through EXTI line detection"]),
         Interrupt::handler("RTC_TAMP_CSS_LSE"),
@@ -174,31 +174,36 @@ pub fn model(config: Configuration) -> ModelBuilder {
         Interrupt::handler("FMAC"),
     ]);
 
-    let rcc = rcc(&mut model);
-    gpio(&mut model, gpio::Instance::A, rcc.ahb2enr.gpioaen);
-    gpio(&mut model, gpio::Instance::B, rcc.ahb2enr.gpioben);
-    gpio(&mut model, gpio::Instance::C, rcc.ahb2enr.gpiocen);
-    gpio(&mut model, gpio::Instance::D, rcc.ahb2enr.gpioden);
-    gpio(&mut model, gpio::Instance::E, rcc.ahb2enr.gpioeen);
-    gpio(&mut model, gpio::Instance::F, rcc.ahb2enr.gpiofen);
-    syscfg(&mut model, rcc.apb2enr.syscfgen);
-    exti(&mut model);
-    cordic(&mut model, rcc.ahb1enr.cordicen);
-    crc(&mut model, rcc.ahb1enr.crcen);
-    vrefbuf(&mut model, rcc.apb2enr.syscfgen);
+    let rcc = rcc(&mut composition);
+    gpio(&mut composition, gpio::Instance::A, rcc.ahb2enr.gpioaen);
+    gpio(&mut composition, gpio::Instance::B, rcc.ahb2enr.gpioben);
+    gpio(&mut composition, gpio::Instance::C, rcc.ahb2enr.gpiocen);
+    gpio(&mut composition, gpio::Instance::D, rcc.ahb2enr.gpioden);
+    gpio(&mut composition, gpio::Instance::E, rcc.ahb2enr.gpioeen);
+    gpio(&mut composition, gpio::Instance::F, rcc.ahb2enr.gpiofen);
+    syscfg(&mut composition, rcc.apb2enr.syscfgen);
+    exti(&mut composition);
+    cordic(&mut composition, rcc.ahb1enr.cordicen);
+    crc(&mut composition, rcc.ahb1enr.crcen);
+    vrefbuf(&mut composition, rcc.apb2enr.syscfgen);
     dma(
-        &mut model,
+        &mut composition,
         dma::Instance::Dma1,
         config.dma_channels,
         rcc.ahb1enr.dma1en,
     );
     dma(
-        &mut model,
+        &mut composition,
         dma::Instance::Dma2,
         config.dma_channels,
         rcc.ahb1enr.dma2en,
     );
-    dmamux(&mut model, 2, config.dma_channels, rcc.ahb1enr.dmamux1en);
+    dmamux(
+        &mut composition,
+        2,
+        config.dma_channels,
+        rcc.ahb1enr.dmamux1en,
+    );
 
-    model
+    composition
 }

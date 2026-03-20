@@ -5,7 +5,7 @@ pub mod init;
 pub mod pol;
 
 use peripherals::rcc::enr;
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use cr::cr;
 use dr::dr;
@@ -13,8 +13,8 @@ use idr::idr;
 
 use crate::crc::{init::init, pol::pol};
 
-pub fn crc(model: &mut ModelBuilder, crcen: enr::Output) {
-    let mut crc = model.add_peripheral(Peripheral::new("crc", 0x4002_3000));
+pub fn crc(composition: &mut Composition, crcen: enr::Output) {
+    let mut crc = composition.add_peripheral(Peripheral::new("crc", 0x4002_3000));
     crc.ontological_entitlements([[crcen.enabled]]);
 
     dr(&mut crc);

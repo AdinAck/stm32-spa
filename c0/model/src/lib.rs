@@ -1,6 +1,6 @@
 pub mod rcc;
 
-use phm::ModelBuilder;
+use phm::Composition;
 
 use crate::rcc::rcc;
 
@@ -14,8 +14,8 @@ impl Configuration {
     }
 }
 
-pub fn model(_config: Configuration) -> ModelBuilder {
-    let mut model = ModelBuilder::new();
+pub fn compose(_config: Configuration) -> Composition {
+    let mut model = Composition::new();
 
     rcc(&mut model);
 

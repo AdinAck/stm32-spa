@@ -2,7 +2,7 @@ pub mod ahb1enr;
 pub mod ahb2enr;
 pub mod apb2enr;
 
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use crate::rcc::{ahb1enr::ahb1enr, ahb2enr::ahb2enr, apb2enr::apb2enr};
 
@@ -12,8 +12,8 @@ pub struct Output {
     pub apb2enr: apb2enr::Output,
 }
 
-pub fn rcc(model: &mut ModelBuilder) -> Output {
-    let mut rcc = model.add_peripheral(Peripheral::new("rcc", 0x4002_1000));
+pub fn rcc(composition: &mut Composition) -> Output {
+    let mut rcc = composition.add_peripheral(Peripheral::new("rcc", 0x4002_1000));
 
     Output {
         ahb1enr: ahb1enr(&mut rcc),

@@ -10,7 +10,7 @@ pub mod otyper;
 pub mod pupdr;
 
 use peripherals::rcc::enr;
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use crate::gpio::{
     afr::afr, idr::idr, moder::moder, odr::odr, ospeedr::ospeedr, otyper::otyper, pupdr::pupdr,
@@ -53,8 +53,9 @@ impl Instance {
     }
 }
 
-pub fn gpio(model: &mut ModelBuilder, instance: Instance, gpioen: enr::Output) {
-    let mut gpio = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
+pub fn gpio(composition: &mut Composition, instance: Instance, gpioen: enr::Output) {
+    let mut gpio =
+        composition.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
     gpio.ontological_entitlements([[gpioen.enabled]]);
 

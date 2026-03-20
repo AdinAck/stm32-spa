@@ -1,5 +1,5 @@
 use peripherals::rcc::enr;
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use crate::dmamux::{ccr::ccr, cfr::cfr, csr::csr, rgcfr::rgcfr, rgcr::rgcr, rgsr::rgsr};
 
@@ -10,8 +10,8 @@ pub mod rgcfr;
 pub mod rgcr;
 pub mod rgsr;
 
-pub fn dmamux(model: &mut ModelBuilder, instances: u8, channels: u8, dmamux1en: enr::Output) {
-    let mut dmamux = model.add_peripheral(Peripheral::new("dmamux", 0x4002_0800));
+pub fn dmamux(composition: &mut Composition, instances: u8, channels: u8, dmamux1en: enr::Output) {
+    let mut dmamux = composition.add_peripheral(Peripheral::new("dmamux", 0x4002_0800));
 
     dmamux.ontological_entitlements([[dmamux1en.enabled]]);
 
