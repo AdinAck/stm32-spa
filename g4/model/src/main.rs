@@ -1,4 +1,4 @@
-use stm32g4_spa_model::{Configuration, model};
+use stm32g4_spa_model::{Configuration, compose};
 
 fn main() {
     for variant in [
@@ -8,6 +8,6 @@ fn main() {
         Configuration::g484(),
     ] {
         println!("=== Variant: {variant:?} ===");
-        phm::validate(model(variant));
+        phm::validate(compose(variant));
     }
 }

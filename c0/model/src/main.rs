@@ -1,5 +1,5 @@
-use stm32c0_spa_model::{Configuration, model};
+use stm32c0_spa_model::{Configuration, compose};
 
 fn main() {
-    phm::validate(model(Configuration::c092()));
+    phm::validate(compose(Configuration::c092()));
 }

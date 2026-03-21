@@ -3,14 +3,14 @@ mod rdata;
 mod wdata;
 
 use peripherals::rcc::enr;
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use csr::csr;
 use rdata::rdata;
 use wdata::wdata;
 
-pub fn cordic(model: &mut ModelBuilder, cordicen: enr::Output) {
-    let mut cordic = model.add_peripheral(Peripheral::new("cordic", 0x4002_0c00));
+pub fn cordic(composition: &mut Composition, cordicen: enr::Output) {
+    let mut cordic = composition.add_peripheral(Peripheral::new("cordic", 0x4002_0c00));
 
     cordic.ontological_entitlements([[cordicen.enabled]]);
 

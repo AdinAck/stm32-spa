@@ -1,4 +1,4 @@
-use model::{Configuration, model};
+use model::{Configuration, compose};
 
 fn main() {
     let variant = if cfg!(feature = "g431") {
@@ -13,7 +13,7 @@ fn main() {
         Configuration::default()
     };
 
-    phb::render(&model(variant));
+    phb::render(&compose(variant));
 
     // prevent recompiling when tests change
     println!("cargo::rerun-if-changed=../model");

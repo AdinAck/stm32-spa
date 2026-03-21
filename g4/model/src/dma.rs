@@ -6,7 +6,7 @@ pub mod ifcr;
 pub mod isr;
 
 use peripherals::rcc::enr;
-use phm::{ModelBuilder, Peripheral};
+use phm::{Composition, Peripheral};
 
 use crate::dma::{ccr::ccr, cmar::cmar, cndtr::cndtr, cpar::cpar, ifcr::ifcr, isr::isr};
 
@@ -32,8 +32,9 @@ impl Instance {
     }
 }
 
-pub fn dma(model: &mut ModelBuilder, instance: Instance, channels: u8, dmaen: enr::Output) {
-    let mut dma = model.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
+pub fn dma(composition: &mut Composition, instance: Instance, channels: u8, dmaen: enr::Output) {
+    let mut dma =
+        composition.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
     dma.ontological_entitlements([[dmaen.enabled]]);
 
