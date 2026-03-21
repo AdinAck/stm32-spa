@@ -16,5 +16,6 @@ fn main() {
     phb::render(&compose(variant));
 
     // prevent recompiling when tests change
-    println!("cargo::rerun-if-changed=../model");
+    println!("cargo::rerun-if-changed=../model/src");
+    println!("cargo::rerun-if-changed=../../peripherals/src");
 }

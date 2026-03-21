@@ -1,4 +1,4 @@
-use model::{Configuration, compose};
+use model::{compose, Configuration};
 
 fn main() {
     let variant = if cfg!(feature = "c092") {
@@ -10,5 +10,6 @@ fn main() {
     phb::render(&compose(variant));
 
     // prevent recompiling when tests change
-    println!("cargo::rerun-if-changed=../model");
+    println!("cargo::rerun-if-changed=../model/src");
+    println!("cargo::rerun-if-changed=../../peripherals/src");
 }
