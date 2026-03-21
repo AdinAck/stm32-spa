@@ -11,13 +11,14 @@
 //! | Enabled  | 1    |
 
 use phm::{
-    Entitlement, Field, Register, Variant,
-    model::{PeripheralEntry, RegisterEntry},
+    Field, Register,
+    field::access,
+    model::{FieldEntry, PeripheralEntry, RegisterEntry},
 };
 use quote::format_ident;
 
-/// Reset & Clock Control peripherals implement this trait.
-pub trait Rcc {
+/// Reset & Clock Control peripherals implement this trait to attach Peripheral Clock Enable registers.
+pub trait Enr {
     /// Add a Peripheral Clock Enable register to this peripheral.
     ///
     /// *Note: The suffix "enr" is added to the provided name.*
@@ -36,21 +37,26 @@ pub trait Rcc {
     /// Add a Peripheral Clock Enable register to this peripheral given a [`Regsiter`] component.
     ///
     /// *Note: The suffix "enr" is added to the provided name.*
-    fn enr_from_register<'cx>(
-        &'cx mut self,
+    fn enr_from_register<'ncx>(
+        &'ncx mut self,
         register: Register,
         index: Option<usize>,
-    ) -> RegisterEntry<'cx>;
+    ) -> RegisterEntry<'ncx>;
 }
 
-impl<'cx> Rcc for PeripheralEntry<'cx> {
+impl<'cx> Enr for PeripheralEntry<'cx> {
     fn enr_from_register<'ncx>(
         &'ncx mut self,
         mut register: Register,
         index: Option<usize>,
     ) -> RegisterEntry<'ncx> {
         let name = register.module_name();
-        register.ident = format_ident!("{name}enr");
+
+        if let Some(index) = index {
+            register.ident = format_ident!("{name}enr{index}");
+        } else {
+            register.ident = format_ident!("{name}enr");
+        }
 
         let title = "peripheral clock enable register";
 
@@ -62,42 +68,59 @@ impl<'cx> Rcc for PeripheralEntry<'cx> {
     }
 }
 
-/// Peripheral Clock Enable registers implement this trait.
-pub trait Enr {
+/// Peripheral Clock Enable registers implement this trait to attach Peripheral Clock Enable fields.
+pub trait En {
     /// Add a Peripheral Clock Enable field to this register.
     ///
-    /// *Note: The suffix "en" is added to the provided name, and the width is fixed at `1`.*
-    fn en(&mut self, name: impl AsRef<str>, position: u8) -> Output {
-        self.en_from_field(Field::new(name, position, 1))
-    }
-
-    /// Add a Peripheral Clock Enable field to this register given a [`Field`] component.
-    ///
-    /// *Note: The suffix "en" is added to the provided name, and the width is fixed at `1`.*
-    fn en_from_field(&mut self, field: Field) -> Output;
+    /// *Note: The suffix "en" is added to the provided name.*
+    fn en<'ncx>(
+        &'ncx mut self,
+        name: impl AsRef<str>,
+        position: u8,
+    ) -> FieldEntry<'ncx, access::Store>;
 }
 
-impl<'cx> Enr for RegisterEntry<'cx> {
-    fn en_from_field(&mut self, mut field: Field) -> Output {
-        let name = field.module_name();
-        field.ident = format_ident!("{name}en");
-        field.width = 1;
+impl<'cx> En for RegisterEntry<'cx> {
+    fn en<'ncx>(
+        &'ncx mut self,
+        name: impl AsRef<str>,
+        position: u8,
+    ) -> FieldEntry<'ncx, access::Store> {
+        let name = name.as_ref();
 
-        let mut en = self.add_store_field(field.docs([format!("{name} clock enable.")]));
+        self.add_store_field(
+            Field::new(format!("{name}en"), position, 1).docs([format!("{name} clock enable.")]),
+        )
+    }
+}
 
-        Output {
-            disabled: en
-                .add_variant(Variant::new("Disabled", 0).docs(["Peripheral clock is disabled."]))
-                .make_entitlement(),
-            enabled: en
-                .add_variant(Variant::new("Enabled", 1).docs(["Peripheral clock is enabled."]))
-                .make_entitlement(),
+pub mod en {
+    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
+
+    /// Peripheral Clock Enable fields implement this trait to be appropriately populated.
+    pub trait En {
+        /// Populate the Peripheral Clock Enable field with the appropriate contents.
+        fn en(&mut self) -> Output;
+    }
+
+    impl<'cx> En for FieldEntry<'cx, access::Store> {
+        fn en(&mut self) -> Output {
+            Output {
+                disabled: self
+                    .add_variant(
+                        Variant::new("Disabled", 0).docs(["Peripheral clock is disabled."]),
+                    )
+                    .make_entitlement(),
+                enabled: self
+                    .add_variant(Variant::new("Enabled", 1).docs(["Peripheral clock is enabled."]))
+                    .make_entitlement(),
+            }
         }
     }
-}
 
-#[derive(Clone, Copy)]
-pub struct Output {
-    pub disabled: Entitlement,
-    pub enabled: Entitlement,
+    #[derive(Clone, Copy)]
+    pub struct Output {
+        pub disabled: Entitlement,
+        pub enabled: Entitlement,
+    }
 }

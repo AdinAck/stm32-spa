@@ -5,7 +5,7 @@ pub mod cpar;
 pub mod ifcr;
 pub mod isr;
 
-use peripherals::rcc::enr;
+use peripherals::rcc::enr::en;
 use phm::{Composition, Peripheral};
 
 use crate::dma::{ccr::ccr, cmar::cmar, cndtr::cndtr, cpar::cpar, ifcr::ifcr, isr::isr};
@@ -32,7 +32,7 @@ impl Instance {
     }
 }
 
-pub fn dma(composition: &mut Composition, instance: Instance, channels: u8, dmaen: enr::Output) {
+pub fn dma(composition: &mut Composition, instance: Instance, channels: u8, dmaen: en::Output) {
     let mut dma =
         composition.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
