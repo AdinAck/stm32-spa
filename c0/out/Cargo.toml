@@ -38,6 +38,10 @@ phb = { package = "proto-hal-build", git = "https://github.com/adinack/proto-hal
 test = false
 bench = false
 
+[[test]]
+name = "gpio"
+harness = false
+
 [profile.dev]
 debug = true
 opt-level = "z"
