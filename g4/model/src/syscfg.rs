@@ -1,11 +1,11 @@
 pub mod exticr;
 
-use peripherals::rcc::enr;
+use peripherals::rcc::enr::en;
 use phm::{Composition, Peripheral};
 
 use crate::syscfg::exticr::exticr;
 
-pub fn syscfg(composition: &mut Composition, syscfgen: enr::Output) {
+pub fn syscfg(composition: &mut Composition, syscfgen: en::Output) {
     let mut syscfg = composition.add_peripheral(
         Peripheral::new("syscfg", 0x4001_0000).docs(["This peripheral is incomplete."]),
     );
