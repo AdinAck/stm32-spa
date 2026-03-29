@@ -34,7 +34,7 @@ pub trait Enr {
         self.enr_from_register(Register::new(name, offset).reset(reset), index)
     }
 
-    /// Add a Peripheral Clock Enable register to this peripheral given a [`Regsiter`] component.
+    /// Add a Peripheral Clock Enable register to this peripheral given a [`Register`] component.
     ///
     /// *Note: The suffix "enr" is added to the provided name.*
     fn enr_from_register<'ncx>(

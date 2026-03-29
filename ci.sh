@@ -7,6 +7,7 @@ cd g4/model
 
 cargo r
 cargo clippy -- --deny warnings
+RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
 cd ../out
 
@@ -29,6 +30,7 @@ cd c0/model
 
 cargo r
 cargo clippy -- --deny warnings
+RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
 cd ../out
 
