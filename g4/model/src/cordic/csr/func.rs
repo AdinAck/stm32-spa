@@ -16,7 +16,6 @@ pub fn func<'cx>(csr: &mut RegisterEntry<'cx>, entitlements: Entitlements) {
         ("sin", vec![entitlements.n0]),
         ("atan2", vec![entitlements.n0]),
         ("magnitude", vec![entitlements.n0]),
-        ("atan", vec![]),
         ("cosh", vec![entitlements.n0]),
         ("sinh", vec![entitlements.n0]),
         ("atanh", vec![entitlements.n0]),

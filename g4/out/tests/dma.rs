@@ -60,12 +60,14 @@ mod tests {
 
             // dma
 
+            let en = dma1.ccr0.en;
+
             // configure channel
             let (.., psize, msize) = hal::modify! {
                 @critical_section(cs),
                 dma1::ccr0 {
                     dir(dma1.ccr0.dir) => ReadFromPeripheral,
-                    en(&dma1.ccr0.en),
+                    en(&en),
                     minc(dma1.ccr0.minc) => Enabled,
                     psize(dma1.ccr0.psize) => Bits32,
                     msize(dma1.ccr0.msize) => Bits32,
@@ -88,7 +90,7 @@ mod tests {
             hal::write! {
                 dma1 {
                     cpar0::pa32(pa32) => 0x4002_0c08, // cordic::rdata
-                    ccr0::en(&dma1.ccr0.en),
+                    ccr0::en(&en),
                 }
             };
 
@@ -98,15 +100,15 @@ mod tests {
             hal::write!(
                 dma1 {
                     cmar0::ma32(&mut ma32) => dst_addr,
-                    ccr0::en(&dma1.ccr0.en),
+                    ccr0::en(&en),
                 }
             );
 
             // transfer length
-            hal::write! {
+            let ndt = hal::write! {
                 dma1 {
-                    cndtr0::ndt(dma1.cndtr0.ndt) => { N as u16 },
-                    ccr0::en(&dma1.ccr0.en),
+                    cndtr0::ndt(dma1.cndtr0.ndt) => N as u16,
+                    ccr0::en(&en),
                 }
             };
 
@@ -122,10 +124,14 @@ mod tests {
 
             // enable transfer
             // TODO: this should require ndt as well to make both Dynamic
+            // En<Enabled>: Entitled<P<Axis = HardwareAffordance>, En<&mut Dynamic>>
+            // En<&mut Dynamic>: Entitled<P<Axis = HardwareAffordance>, En<Enabled>>
             hal::modify! {
                 @critical_section(cs),
                 dma1 {
-                    ccr0::en(dma1.ccr0.en) => Enabled,
+                    // both of these should be required to be Dynamic
+                    ccr0::en(en) => Enabled,
+                    cndtr0::ndt(&ndt.into_dynamic()),
                 }
             };
 
