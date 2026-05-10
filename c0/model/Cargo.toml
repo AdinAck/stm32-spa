@@ -1,8 +1,0 @@
-[package]
-name = "stm32c0-spa-model"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-phm = { package = "proto-hal-model", git = "https://github.com/adinack/proto-hal" }
-peripherals = { package = "stm32-spa-peripherals", path = "../../peripherals" }

@@ -1,0 +1,10 @@
+[package]
+name = "stm32-spa-model"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cmpm = { package = "cortex-m-spa-model", git = "https://github.com/adinack/cortex-m-spa" }
+enum-iterator = "2.3.0"
+phm = { package = "proto-hal-model", git = "https://github.com/adinack/proto-hal" }
+quote = "1.0.45"

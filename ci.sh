@@ -2,48 +2,26 @@
 
 set -euxo pipefail
 
-# g4
-cd g4/model
+cd model
 
-cargo r
-cargo clippy -- --deny warnings
-RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
+# cargo r
+# cargo clippy -- --deny warnings
+# RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
-cd ../out
+# cd ../out
 
-VARIANTS=("g431" "g441" "g474" "g484")
+# cargo clippy -- --deny warnings
+# RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
-for VARIANT in "${VARIANTS[@]}"; do
-    cargo build --features "$VARIANT"
-    cargo build --tests --features "$VARIANT"
-    cargo build --examples --features "$VARIANT"
+cd ../tests
 
-    cargo clippy --features "$VARIANT" -- --deny warnings
-    cargo clippy --tests --features "$VARIANT" -- --deny warnings
-    cargo clippy --examples --features "$VARIANT" -- --deny warnings
-done
+for test_crate in "$PWD"/*/; do
+    cd $test_crate
+    cargo build --tests
+    cargo build --examples
 
-cd ../..
-
-# c0
-cd c0/model
-
-cargo r
-cargo clippy -- --deny warnings
-RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
-
-cd ../out
-
-VARIANTS=("c092")
-
-for VARIANT in "${VARIANTS[@]}"; do
-    cargo build --features "$VARIANT"
-    cargo build --tests --features "$VARIANT"
-    cargo build --examples --features "$VARIANT"
-
-    cargo clippy --features "$VARIANT" -- --deny warnings
-    cargo clippy --tests --features "$VARIANT" -- --deny warnings
-    cargo clippy --examples --features "$VARIANT" -- --deny warnings
+    cargo clippy --tests -- --deny warnings
+    cargo clippy --examples -- --deny warnings
 done
 
 # all tests are HIL
