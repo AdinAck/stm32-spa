@@ -15,6 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: 1.95.0
+          components: "clippy"
       - name: Install Deps
         run: cargo install flip-link
       - name: ci
