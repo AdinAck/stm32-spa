@@ -1,2 +1,4 @@
 [toolchain]
+channel = "1.95"
 targets = ["thumbv6m-none-eabi"]
+components = ["clippy"]

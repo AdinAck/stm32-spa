@@ -4,13 +4,13 @@ set -euxo pipefail
 
 cd model
 
-# cargo r
-# cargo clippy -- --deny warnings
-# RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
+cargo run
+cargo clippy -- --deny warnings
+RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
-# cd ../out
+cd ../out
 
-# cargo clippy -- --deny warnings
+cargo clippy -- --deny warnings
 # RUSTDOCFLAGS='--deny warnings' cargo doc --no-deps
 
 cd ../tests
