@@ -1,0 +1,23 @@
+pub mod ahb1enr;
+pub mod ahb2enr;
+pub mod apb2enr;
+
+use phm::{Composition, Peripheral};
+
+use crate::devices::g4::rcc::{ahb1enr::ahb1enr, ahb2enr::ahb2enr, apb2enr::apb2enr};
+
+pub struct Output {
+    pub ahb1enr: ahb1enr::Output,
+    pub ahb2enr: ahb2enr::Output,
+    pub apb2enr: apb2enr::Output,
+}
+
+pub fn rcc(composition: &mut Composition) -> Output {
+    let mut rcc = composition.add_peripheral(Peripheral::new("rcc", 0x4002_1000));
+
+    Output {
+        ahb1enr: ahb1enr(&mut rcc),
+        ahb2enr: ahb2enr(&mut rcc),
+        apb2enr: apb2enr(&mut rcc),
+    }
+}

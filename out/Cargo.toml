@@ -1,0 +1,39 @@
+[package]
+name = "stm32-spa"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = ["rt"]
+
+c092 = ["macros/c092"]
+g431 = ["macros/g431"]
+g441 = ["macros/g441"]
+g474 = ["macros/g474"]
+g484 = ["macros/g484"]
+
+rt = ["cortex-m-rt/device"]
+
+[dependencies]
+cortex-m-rt = { version = "0.7.3" }
+macros = { package = "stm32-spa-macros", path = "../macros" }
+proto-hal = { git = "https://github.com/adinack/proto-hal" }
+
+[build-dependencies]
+model = { package = "stm32-spa-model", path = "../model" }
+phb = { package = "proto-hal-build", git = "https://github.com/adinack/proto-hal" }
+
+[lib]
+test = false
+bench = false
+
+[profile.dev]
+debug = true
+opt-level = "z"
+incremental = true
+
+[profile.release]
+debug = false
+lto = true
+opt-level = "z"
+incremental = true
