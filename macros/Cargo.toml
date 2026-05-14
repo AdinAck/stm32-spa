@@ -6,7 +6,7 @@ rust-version = "1.95"
 
 [dependencies]
 model = { package = "stm32-spa-model", path = "../model" }
-proto-hal-build = { git = "https://github.com/adinack/proto-hal", features = ["macros"] }
+proto-hal-build = { git = "https://github.com/adinack/proto-hal", features = ["macros"], default-features = false }
 proto-hal-macros = { git = "https://github.com/adinack/proto-hal" }
 
 
