@@ -10,8 +10,8 @@ use crate::devices::g4::vrefbuf::csr::{envr::envr, hiz::hiz, vrr::vrr, vrs::vrs}
 pub fn csr<'cx>(vrefbuf: &mut PeripheralEntry<'cx>) {
     let mut csr = vrefbuf.add_register(Register::new("csr", 0).reset(0x2));
 
-    envr(&mut csr);
+    let envr = envr(&mut csr);
     hiz(&mut csr);
     vrr(&mut csr);
-    vrs(&mut csr);
+    vrs(&mut csr, &envr);
 }
