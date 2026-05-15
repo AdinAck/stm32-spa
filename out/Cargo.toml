@@ -13,7 +13,7 @@ g441 = ["macros/g441"]
 g474 = ["macros/g474"]
 g484 = ["macros/g484"]
 
-rt = ["cortex-m-rt/device"]
+rt = ["cortex-m-rt/device", "phb/interrupts"]
 
 [dependencies]
 cortex-m-rt = { version = "0.7.3" }
@@ -22,7 +22,7 @@ proto-hal = { git = "https://github.com/adinack/proto-hal" }
 
 [build-dependencies]
 model = { package = "stm32-spa-model", path = "../model" }
-phb = { package = "proto-hal-build", git = "https://github.com/adinack/proto-hal" }
+phb = { package = "proto-hal-build", git = "https://github.com/adinack/proto-hal", features = ["integrated"], default-features = false }
 
 [lib]
 test = false
