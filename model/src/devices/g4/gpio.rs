@@ -20,7 +20,7 @@ pub struct Output {
     pub afrh: afr::Output,
 }
 
-pub fn gpio(composition: &mut Composition, instance: Instance, gpioen: en::Output) -> Output {
+pub fn gpio(composition: &mut Composition, instance: Instance, gpioen: en::EnSchema) -> Output {
     let mut gpio = composition.gpio(
         instance,
         match instance {

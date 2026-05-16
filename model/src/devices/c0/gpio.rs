@@ -26,7 +26,7 @@ pub fn gpio(
     composition: &mut Composition,
     variant: &Variant,
     instance: Instance,
-    gpioen: en::Output,
+    gpioen: en::EnSchema,
 ) -> Output {
     let mut gpio = composition.gpio(
         instance,
