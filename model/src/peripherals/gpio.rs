@@ -1,10 +1,9 @@
-//! GPIO structures and model component helpers.
-//!
 //! References:
 //! - RM0440
 //! - RM0490
 
-use phm::{Composition, Peripheral, model::PeripheralEntry};
+use model_macros::peripheral;
+use phm::Peripheral;
 
 use crate::peripherals::rcc::enr::en;
 
@@ -41,28 +40,16 @@ impl Instance {
     }
 }
 
-/// Device model compositions implement this trait to attach GPIO peripherals.
-pub trait Gpio {
-    /// Add a GPIO peripheral to this composition.
-    fn gpio<'ncx>(
-        &'ncx mut self,
-        instance: Instance,
-        base_addr: u32,
-        en: en::Output,
-    ) -> PeripheralEntry<'ncx>;
-}
+peripheral! {
+    /// Attach GPIO peripherals to device model compositions.
+    Gpio {
+        /// Attach a GPIO peripheral to this composition.
+        gpio(instance: Instance, base_addr: u32, en: en::EnSchema) {
+            let mut gpio = self.add_peripheral(Peripheral::new(instance.name(), base_addr));
 
-impl Gpio for Composition {
-    fn gpio<'ncx>(
-        &'ncx mut self,
-        instance: Instance,
-        base_addr: u32,
-        en: en::Output,
-    ) -> PeripheralEntry<'ncx> {
-        let mut gpio = self.add_peripheral(Peripheral::new(instance.name(), base_addr));
+            gpio.ontological_entitlements([[en.enabled]]);
 
-        gpio.ontological_entitlements([[en.enabled]]);
-
-        gpio
+            gpio
+        }
     }
 }

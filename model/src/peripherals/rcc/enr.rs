@@ -10,117 +10,77 @@
 //! | Disabled | 0    |
 //! | Enabled  | 1    |
 
-use phm::{
-    Field, Register,
-    field::access,
-    model::{FieldEntry, PeripheralEntry, RegisterEntry},
-};
-use quote::format_ident;
+use model_macros::{field, register};
+use phm::{Field, Register};
 
-/// Reset & Clock Control peripherals implement this trait to attach Peripheral Clock Enable registers.
-pub trait Enr {
-    /// Add a Peripheral Clock Enable register to this peripheral.
-    ///
-    /// *Note: The suffix "enr" is added to the provided name.*
-    fn enr<'ncx>(
-        &'ncx mut self,
-        name: impl AsRef<str>,
-        offset: u32,
-        reset: u32,
-        index: Option<usize>,
-    ) -> RegisterEntry<'ncx> {
-        let name = name.as_ref();
+register! {
+    /// Attach Peripheral Clock Enable registers to Reset & Clock Control peripherals.
+    Enr {
+        /// Attach a Peripheral Clock Enable register to this peripheral.
+        ///
+        /// *Note: The suffix "enr" is added to the provided name.*
+        enr(
+            name: impl AsRef<str>,
+            offset: u32,
+            reset: u32,
+            index: Option<usize>,
+        ) {
+            let name = name.as_ref();
 
-        self.enr_from_register(Register::new(name, offset).reset(reset), index)
-    }
+            let title = "peripheral clock enable register";
 
-    /// Add a Peripheral Clock Enable register to this peripheral given a [`Register`] component.
-    ///
-    /// *Note: The suffix "enr" is added to the provided name.*
-    fn enr_from_register<'ncx>(
-        &'ncx mut self,
-        register: Register,
-        index: Option<usize>,
-    ) -> RegisterEntry<'ncx>;
-}
-
-impl<'cx> Enr for PeripheralEntry<'cx> {
-    fn enr_from_register<'ncx>(
-        &'ncx mut self,
-        mut register: Register,
-        index: Option<usize>,
-    ) -> RegisterEntry<'ncx> {
-        let name = register.module_name();
-
-        if let Some(index) = index {
-            register.ident = format_ident!("{name}enr{index}");
-        } else {
-            register.ident = format_ident!("{name}enr");
+            self.add_register(Register::new(if let Some(index) = index {
+                format!("{name}enr{index}")
+            } else {
+                format!("{name}enr")
+            }, offset).reset(reset).docs([if let Some(index) = index {
+                format!("{name} {title} {index}.")
+            } else {
+                format!("{name} {title}.")
+            }]))
         }
-
-        let title = "peripheral clock enable register";
-
-        self.add_register(register.docs([if let Some(index) = index {
-            format!("{name} {title} {index}.")
-        } else {
-            format!("{name} {title}.")
-        }]))
     }
 }
 
-/// Peripheral Clock Enable registers implement this trait to attach Peripheral Clock Enable fields.
-pub trait En {
-    /// Add a Peripheral Clock Enable field to this register.
-    ///
-    /// *Note: The suffix "en" is added to the provided name.*
-    fn en<'ncx>(
-        &'ncx mut self,
-        name: impl AsRef<str>,
-        position: u8,
-    ) -> FieldEntry<'ncx, access::Store>;
-}
+field! {
+    /// Attach Peripheral Clock Enable fields to Peripheral Clock Enable registers.
+    En<Store> {
+        /// Attach a Peripheral Clock Enable field to this register.
+        ///
+        /// *Note: The suffix "en" is added to the provided name.*
+        en(name: impl AsRef<str>, position: u8) {
+            let name = name.as_ref();
 
-impl<'cx> En for RegisterEntry<'cx> {
-    fn en<'ncx>(
-        &'ncx mut self,
-        name: impl AsRef<str>,
-        position: u8,
-    ) -> FieldEntry<'ncx, access::Store> {
-        let name = name.as_ref();
-
-        self.add_store_field(
-            Field::new(format!("{name}en"), position, 1).docs([format!("{name} clock enable.")]),
-        )
+            self.add_store_field(
+                Field::new(format!("{name}en"), position, 1).docs([format!("{name} clock enable.")]),
+            )
+        }
     }
 }
 
 pub mod en {
-    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
+    use model_macros::schema;
+    use phm::Variant;
 
-    /// Peripheral Clock Enable fields implement this trait to be appropriately populated.
-    pub trait En {
-        /// Populate the Peripheral Clock Enable field with the appropriate contents.
-        fn en(&mut self) -> Output;
-    }
+    schema! {
+        /// Attach Peripheral Clock Enable schemas to Peripheral Clock Enable Fields.
+        En<Store> {
+            /// | Variant  | Bits |
+            /// | -------- | ---- |
+            /// | Disabled | 0    |
+            /// | Enabled  | 1    |
+            en() {
+                /// The corresponding peripheral is disabled.
+                #[entitlement]
+                disabled: self.add_variant(Variant::new("Disabled", 0).docs(["Peripheral clock is disabled."])),
 
-    impl<'cx> En for FieldEntry<'cx, access::Store> {
-        fn en(&mut self) -> Output {
-            Output {
-                disabled: self
-                    .add_variant(
-                        Variant::new("Disabled", 0).docs(["Peripheral clock is disabled."]),
-                    )
-                    .make_entitlement(),
-                enabled: self
-                    .add_variant(Variant::new("Enabled", 1).docs(["Peripheral clock is enabled."]))
-                    .make_entitlement(),
+                /// The corresponding peripheral is enabled.
+                ///
+                /// *Note: On some devices there is a delay (usually measured in number of cycles on the respective bus
+                /// ) between this variant being set and the peripheral actually being enabled.*
+                #[entitlement]
+                enabled: self.add_variant(Variant::new("Enabled", 1).docs(["Peripheral clock is enabled."]))
             }
         }
-    }
-
-    #[derive(Clone, Copy)]
-    pub struct Output {
-        pub disabled: Entitlement,
-        pub enabled: Entitlement,
     }
 }

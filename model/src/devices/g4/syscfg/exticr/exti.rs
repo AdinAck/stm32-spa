@@ -1,7 +1,7 @@
 use phm::{Field, Variant, model::RegisterEntry};
 
 pub fn exti<'cx>(exticr: &mut RegisterEntry<'cx>, i: u8) {
-    let mut exti = exticr.add_store_field(Field::new(format!("exti{i}"), (i % 4) * 4, 4));
+    let mut exti = exticr.add_store_field(Field::new_indexed_wrapping(format!("exti{i}"), i, 4, 4));
 
     exti.add_variant(Variant::new("PA", 0));
     exti.add_variant(Variant::new("PB", 1));

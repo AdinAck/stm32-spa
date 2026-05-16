@@ -11,16 +11,16 @@ pub use crate::peripherals::gpio::Instance;
 
 #[derive(Clone, Copy)]
 pub struct Output {
-    pub moder: moder::Output,
-    pub otyper: otyper::Output,
-    pub ospeedr: ospeedr::OutputWithVeryHigh,
-    pub pupdr: pupdr::Output,
-    pub odr: odr::Output,
-    pub afrl: afr::Output,
-    pub afrh: afr::Output,
+    pub moder: moder::Full,
+    pub otyper: otyper::Full,
+    pub ospeedr: ospeedr::FullWithVeryHigh,
+    pub pupdr: pupdr::Full,
+    pub odr: odr::Full,
+    pub afrl: afr::Full,
+    pub afrh: afr::Full,
 }
 
-pub fn gpio(composition: &mut Composition, instance: Instance, gpioen: en::Output) -> Output {
+pub fn gpio(composition: &mut Composition, instance: Instance, gpioen: en::EnSchema) -> Output {
     let mut gpio = composition.gpio(
         instance,
         match instance {
