@@ -2,11 +2,11 @@ use crate::peripherals::{prelude::*, rcc::enr::en};
 use phm::model::PeripheralEntry;
 
 pub struct Output {
-    pub dma1en: en::Output,
+    pub dma1en: en::EnSchema,
 
-    pub flashen: en::Output,
+    pub flashen: en::EnSchema,
 
-    pub crcen: en::Output,
+    pub crcen: en::EnSchema,
 }
 
 pub fn ahbenr<'cx>(rcc: &mut PeripheralEntry<'cx>) -> Output {

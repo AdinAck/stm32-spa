@@ -2,21 +2,21 @@ use crate::peripherals::{prelude::*, rcc::enr::en};
 use phm::model::PeripheralEntry;
 
 pub struct Output {
-    pub syscfgen: en::Output,
+    pub syscfgen: en::EnSchema,
 
-    pub tim1en: en::Output,
-    pub spi1en: en::Output,
-    pub tim8en: en::Output,
-    pub usart1en: en::Output,
-    pub spi4en: en::Output,
-    pub tim15en: en::Output,
-    pub tim16en: en::Output,
-    pub tim17en: en::Output,
+    pub tim1en: en::EnSchema,
+    pub spi1en: en::EnSchema,
+    pub tim8en: en::EnSchema,
+    pub usart1en: en::EnSchema,
+    pub spi4en: en::EnSchema,
+    pub tim15en: en::EnSchema,
+    pub tim16en: en::EnSchema,
+    pub tim17en: en::EnSchema,
 
-    pub tim20en: en::Output,
-    pub sai1en: en::Output,
+    pub tim20en: en::EnSchema,
+    pub sai1en: en::EnSchema,
 
-    pub hrtim1en: en::Output,
+    pub hrtim1en: en::EnSchema,
 }
 
 pub fn apb2enr<'cx>(rcc: &mut PeripheralEntry<'cx>) -> Output {

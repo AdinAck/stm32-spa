@@ -9,7 +9,7 @@ use csr::csr;
 use rdata::rdata;
 use wdata::wdata;
 
-pub fn cordic(composition: &mut Composition, cordicen: en::Output) {
+pub fn cordic(composition: &mut Composition, cordicen: en::EnSchema) {
     let mut cordic = composition.add_peripheral(Peripheral::new("cordic", 0x4002_0c00));
 
     cordic.ontological_entitlements([[cordicen.enabled]]);

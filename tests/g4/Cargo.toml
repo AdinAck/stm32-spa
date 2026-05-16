@@ -37,3 +37,10 @@ harness = false
 [[test]]
 name = "dma"
 harness = false
+
+# inject local crates for tests
+[patch."https://github.com/adinack/proto-hal"]
+proto-hal = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/proto-hal" }
+proto-hal-build = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/build" }
+proto-hal-model = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/model" }
+proto-hal-macros = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/macros" }

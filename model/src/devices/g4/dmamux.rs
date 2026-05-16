@@ -12,7 +12,7 @@ pub mod rgcfr;
 pub mod rgcr;
 pub mod rgsr;
 
-pub fn dmamux(composition: &mut Composition, instances: u8, channels: u8, dmamux1en: en::Output) {
+pub fn dmamux(composition: &mut Composition, instances: u8, channels: u8, dmamux1en: en::EnSchema) {
     let mut dmamux = composition.add_peripheral(Peripheral::new("dmamux", 0x4002_0800));
 
     dmamux.ontological_entitlements([[dmamux1en.enabled]]);

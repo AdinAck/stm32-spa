@@ -9,3 +9,8 @@ cmpm = { package = "cortex-m-spa-model", git = "https://github.com/adinack/corte
 enum-iterator = "2.3.0"
 phm = { package = "proto-hal-model", git = "https://github.com/adinack/proto-hal" }
 quote = "1.0.45"
+model-macros = { package = "proto-hal-model-macros", path = "/Users/adinackerman/Documents/GitHub/proto-hal/model-macros" }
+
+# inject local crates for tests
+[patch."https://github.com/adinack/proto-hal"]
+proto-hal-model = { path = "/Users/adinackerman/Documents/GitHub/proto-hal/model" }

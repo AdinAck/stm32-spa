@@ -2,12 +2,12 @@ use crate::peripherals::{prelude::*, rcc::enr::en};
 use phm::model::PeripheralEntry;
 
 pub struct Output {
-    pub gpioaen: en::Output,
-    pub gpioben: en::Output,
-    pub gpiocen: en::Output,
-    pub gpioden: en::Output,
+    pub gpioaen: en::EnSchema,
+    pub gpioben: en::EnSchema,
+    pub gpiocen: en::EnSchema,
+    pub gpioden: en::EnSchema,
 
-    pub gpiofen: en::Output,
+    pub gpiofen: en::EnSchema,
 }
 
 pub fn iopenr<'cx>(rcc: &mut PeripheralEntry<'cx>) -> Output {

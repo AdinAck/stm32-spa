@@ -34,7 +34,7 @@ impl Instance {
     }
 }
 
-pub fn dma(composition: &mut Composition, instance: Instance, channels: u8, dmaen: en::Output) {
+pub fn dma(composition: &mut Composition, instance: Instance, channels: u8, dmaen: en::EnSchema) {
     let mut dma =
         composition.add_peripheral(Peripheral::new(instance.ident(), instance.base_addr()));
 
