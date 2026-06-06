@@ -4,74 +4,58 @@
 //!
 //! Each Alternate Function Select field contains 16 variants AF0 through AF15.
 
-use phm::{
-    Field, Register,
-    field::access,
-    model::{FieldEntry, PeripheralEntry, RegisterEntry},
-};
+use model_macros::{field, register};
+use phm::{Field, Register};
 
-/// GPIO peripherals implement this trait to attach Alternate Function registers.
-pub trait Afr {
-    /// Add a lower Alternate Function register to this peripheral.
-    fn afrl<'ncx>(&'ncx mut self, offset: u32) -> RegisterEntry<'ncx>;
-
-    /// Add an upper Alternate Function register to this peripheral.
-    fn afrh<'ncx>(&'ncx mut self, offset: u32) -> RegisterEntry<'ncx>;
-}
-
-impl<'cx> Afr for PeripheralEntry<'cx> {
-    fn afrl<'ncx>(&'ncx mut self, offset: u32) -> RegisterEntry<'ncx> {
-        afr(self, "afrl", offset)
-    }
-
-    fn afrh<'ncx>(&'ncx mut self, offset: u32) -> RegisterEntry<'ncx> {
-        afr(self, "afrh", offset)
-    }
-}
-
-fn afr<'cx, 'ncx>(
-    afr: &'ncx mut PeripheralEntry<'cx>,
-    name: &str,
-    offset: u32,
-) -> RegisterEntry<'ncx> {
-    afr.add_register(Register::new(name, offset).reset(0))
-}
-
-/// Alternate Function registers implement this trait to attach Alternate Function Selection fields.
-pub trait Afsel {
-    /// Add an Alternate Function Selection field to this register.
-    fn afsel<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store>;
-}
-
-impl<'cx> Afsel for RegisterEntry<'cx> {
-    fn afsel<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store> {
-        self.add_store_field(Field::new(
-            format!("afsel{position}"),
-            (position * 4) % 32,
-            4,
-        ))
-    }
-}
-
-pub type Output = [afsel::Output; 8];
-
-pub mod afsel {
-    use std::array;
-
-    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
-
-    pub trait Afsel {
-        fn afsel(&mut self) -> Output;
-    }
-
-    impl<'cx> Afsel for FieldEntry<'cx, access::Store> {
-        fn afsel(&mut self) -> Output {
-            array::from_fn(|i| {
-                self.add_variant(Variant::new(format!("AF{i}"), i as _))
-                    .make_entitlement()
-            })
+register! {
+    /// Attach Alternate Function registers to GPIO peripherals.
+    Afr {
+        /// Attach a lower Alternate Function register to this peripheral.
+        afrl(offset: u32) {
+            self.add_register(Register::new("afrl", offset).reset(0))
+        }
+        /// Attach an upper Alternate Function register to this peripheral.
+        afrh(offset: u32) {
+            self.add_register(Register::new("afrh", offset).reset(0))
         }
     }
+}
 
-    pub type Output = [Entitlement; 16];
+field! {
+    /// Attach Alternate Function Selection fields to Alternate Function registers.
+    Afsel<Store> {
+        /// Attach an Alternate Function Selection field to this register.
+        ///
+        /// *Note: "position" is not the bit offset, but rather the index of the field.*
+        afsel(position: u8) {
+            self.add_store_field(Field::new_indexed(
+                format!("afsel{position}"),
+                position,
+                4,
+            ))
+        }
+    }
+}
+
+/// A full Alternate Function Selection register. This means the register contains 8 Alternate Function Selection fields.
+pub type Full = [afsel::AfselSchema; 8];
+
+pub mod afsel {
+    use model_macros::schema;
+    use phm::Variant;
+
+    schema! {
+        /// Attach Alternate Function Selection schemas to Alternate Function Selection fields.
+        Afsel<Store> {
+            /// Alternate Function Selection.
+            ///
+            /// There are 16 alternate functions (AF0-AF15).
+            afsel() {
+                /// A selected alternate function.
+                #[entitlement]
+                #[array(0..16, index_pattern = "x")]
+                afx: self.add_variant(Variant::new(format!("AF{x}"), x as _)),
+            }
+        }
+    }
 }

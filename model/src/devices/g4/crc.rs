@@ -13,7 +13,7 @@ use idr::idr;
 
 use crate::devices::g4::crc::{init::init, pol::pol};
 
-pub fn crc(composition: &mut Composition, crcen: en::Output) {
+pub fn crc(composition: &mut Composition, crcen: en::EnSchema) {
     let mut crc = composition.add_peripheral(Peripheral::new("crc", 0x4002_3000));
     crc.ontological_entitlements([[crcen.enabled]]);
 

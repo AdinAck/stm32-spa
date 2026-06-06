@@ -9,63 +9,50 @@
 //! | Push-pull  | 0    |
 //! | Open-drain | 1    |
 
-use phm::{
-    Field, Register,
-    field::access,
-    model::{FieldEntry, PeripheralEntry, RegisterEntry},
-};
+use model_macros::{field, register};
+use phm::{Field, Register};
 
-/// GPIO peripherals implement this trait to attach Port Output Type registers.
-pub trait Otyper {
-    /// Add a Port Output Type register to this peripheral.
-    fn otyper<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx>;
-}
-
-impl<'cx> Otyper for PeripheralEntry<'cx> {
-    fn otyper<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx> {
-        self.add_register(Register::new("otyper", offset).reset(reset))
-    }
-}
-
-/// Port Output Type registers implement this trait to attach Output Type fields.
-pub trait Ot {
-    /// Add an Output Type field to this register.
-    fn ot<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store>;
-}
-
-impl<'cx> Ot for RegisterEntry<'cx> {
-    fn ot<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store> {
-        self.add_store_field(Field::new(format!("ot{position}"), position, 1))
-    }
-}
-
-pub type Output = [ot::Output; 16];
-
-pub mod ot {
-    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
-
-    /// Port Output Type fields implement this trait to be appropriately populated.
-    pub trait Ot {
-        /// Populate the Port Output Type field with the appropriate contents.
-        fn ot(&mut self) -> Output;
-    }
-
-    impl<'cx> Ot for FieldEntry<'cx, access::Store> {
-        fn ot(&mut self) -> Output {
-            Output {
-                push_pull: self
-                    .add_variant(Variant::new("PushPull", 0))
-                    .make_entitlement(),
-                open_drain: self
-                    .add_variant(Variant::new("OpenDrain", 1))
-                    .make_entitlement(),
-            }
+register! {
+    /// Attach Port Output Type registers to GPIO peripherals.
+    Otyper {
+        /// Attach a Port Output Type register to this peripheral.
+        otyper(offset: u32, reset: u32) {
+            self.add_register(Register::new("otyper", offset).reset(reset))
         }
     }
+}
 
-    #[derive(Clone, Copy)]
-    pub struct Output {
-        pub push_pull: Entitlement,
-        pub open_drain: Entitlement,
+field! {
+    /// Attach Output Type fields to Port Output Type registers.
+    Ot<Store> {
+        /// Attach an Output Type field to this register.
+        ot(position: u8) {
+            self.add_store_field(Field::new(format!("ot{position}"), position, 1))
+        }
+    }
+}
+
+/// A full Port Output Type register. This means the register contains 16 Output Type fields.
+pub type Full = [ot::OtSchema; 16];
+
+pub mod ot {
+    use model_macros::schema;
+    use phm::Variant;
+
+    schema! {
+        /// Attach an Output Type schema to an Output Type field.
+        Ot<Store> {
+            /// Output Type.
+            ///
+            /// There are two output types:
+            /// - Push-Pull
+            /// - Open Drain
+            ot() {
+                #[entitlement]
+                push_pull: self.add_variant(Variant::new("PushPull", 0)),
+                #[entitlement]
+                open_drain: self.add_variant(Variant::new("OpenDrain", 1)),
+            }
+        }
     }
 }

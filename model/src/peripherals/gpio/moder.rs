@@ -11,71 +11,56 @@
 //! | Alternate  | 2    |
 //! | Analog     | 3    |
 
-use phm::{
-    Field, Register,
-    field::access,
-    model::{FieldEntry, PeripheralEntry, RegisterEntry},
-};
+use model_macros::{field, register};
+use phm::{Field, Register};
 
-/// GPIO peripherals implement this trait to attach Port Mode registers.
-pub trait Moder {
-    /// Add a Port Mode register to this peripheral.
-    fn moder<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx>;
-}
-
-impl<'cx> Moder for PeripheralEntry<'cx> {
-    fn moder<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx> {
-        self.add_register(Register::new("moder", offset).reset(reset))
-    }
-}
-
-/// Port Mode registers implement this trait to attach Mode fields.
-pub trait Mode {
-    /// Add a Mode field to this register.
-    fn mode<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store>;
-}
-
-impl<'cx> Mode for RegisterEntry<'cx> {
-    fn mode<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store> {
-        self.add_store_field(Field::new(format!("mode{position}"), position * 2, 2))
-    }
-}
-
-pub type Output = [mode::Output; 16];
-
-pub mod mode {
-    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
-
-    /// Port Mode fields implement this trait to be appropriately populated.
-    pub trait Mode {
-        /// Populate the Port Mode field with the appropriate contents.
-        fn mode(&mut self) -> Output;
-    }
-
-    impl<'cx> Mode for FieldEntry<'cx, access::Store> {
-        fn mode(&mut self) -> Output {
-            Output {
-                input: self
-                    .add_variant(Variant::new("Input", 0))
-                    .make_entitlement(),
-                output: self
-                    .add_variant(Variant::new("Output", 1))
-                    .make_entitlement(),
-                alternate: self
-                    .add_variant(Variant::new("Alternate", 2))
-                    .make_entitlement(),
-                analog: self
-                    .add_variant(Variant::new("Analog", 3))
-                    .make_entitlement(),
-            }
+register! {
+    /// Attach Port Mode registers to GPIO peripherals.
+    Moder {
+        /// Attach a Port Mode register to this peripheral.
+        moder(offset: u32, reset: u32) {
+            self.add_register(Register::new("moder", offset).reset(reset))
         }
     }
+}
 
-    #[derive(Clone, Copy)]
-    pub struct Output {
-        pub input: Entitlement,
-        pub output: Entitlement,
-        pub alternate: Entitlement,
-        pub analog: Entitlement,
+field! {
+    /// Attach Mode fields to Port Mode registers.
+    Mode<Store> {
+        /// Attach a Mode field to this register.
+        mode(position: u8) {
+            self.add_store_field(Field::new(format!("mode{position}"), position * 2, 2))
+        }
+    }
+}
+
+/// A full Port Mode register. This means the register contains 16 mode fields.
+pub type Full = [mode::ModeSchema; 16];
+
+pub mod mode {
+    use model_macros::schema;
+    use phm::Variant;
+
+    schema! {
+        /// Attach Mode schemas to Mode fields.
+        Mode<Store> {
+            /// Mode.
+            ///
+            /// There are 4 modes:
+            /// 1. Input
+            /// 1. Output
+            /// 1. Alternate
+            /// 1. Analog
+            mode() {
+                #[entitlement]
+                input: self.add_variant(Variant::new("Input", 0)),
+                #[entitlement]
+                output: self.add_variant(Variant::new("Output", 1)),
+                #[entitlement]
+                alternate: self.add_variant(Variant::new("Alternate", 2)),
+                #[entitlement]
+                analog: self.add_variant(Variant::new("Analog", 3)),
+            }
+        }
     }
 }

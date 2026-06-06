@@ -10,67 +10,53 @@
 //! | PullUp   | 1    |
 //! | PullDown | 2    |
 
-use phm::{
-    Field, Register,
-    field::access,
-    model::{FieldEntry, PeripheralEntry, RegisterEntry},
-};
+use model_macros::{field, register};
+use phm::{Field, Register};
 
-/// GPIO peripherals implement this trait to attach Port Pull-up/Pull-down registers.
-pub trait Pupdr {
-    /// Add a Port Pull-up/Pull-down register to this peripheral.
-    fn pupdr<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx>;
-}
-
-impl<'cx> Pupdr for PeripheralEntry<'cx> {
-    fn pupdr<'ncx>(&'ncx mut self, offset: u32, reset: u32) -> RegisterEntry<'ncx> {
-        self.add_register(Register::new("pupdr", offset).reset(reset))
-    }
-}
-
-/// Port Pull-up/Pull-down registers implement this trait to attach Mode fields.
-pub trait Pupd {
-    /// Add a Pull-up/Pull-down field to this register.
-    fn pupd<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store>;
-}
-
-impl<'cx> Pupd for RegisterEntry<'cx> {
-    fn pupd<'ncx>(&'ncx mut self, position: u8) -> FieldEntry<'ncx, access::Store> {
-        self.add_store_field(Field::new(format!("pupd{position}"), position * 2, 2))
-    }
-}
-
-pub type Output = [pupd::Output; 16];
-
-pub mod pupd {
-    use phm::{Entitlement, Variant, field::access, model::FieldEntry};
-
-    /// Port Pull-up/Pull-down fields implement this trait to be appropriately populated.
-    pub trait Pupd {
-        /// Populate the Port Pull-up/Pull-down field with the appropriate contents.
-        fn pupd(&mut self) -> Output;
-    }
-
-    impl<'cx> Pupd for FieldEntry<'cx, access::Store> {
-        fn pupd(&mut self) -> Output {
-            Output {
-                floating: self
-                    .add_variant(Variant::new("Floating", 0))
-                    .make_entitlement(),
-                pullup: self
-                    .add_variant(Variant::new("PullUp", 1))
-                    .make_entitlement(),
-                pulldown: self
-                    .add_variant(Variant::new("PullDown", 2))
-                    .make_entitlement(),
-            }
+register! {
+    /// Attach Port Pull-up/Pull-down registers to PGIO peripherals.
+    Pupdr {
+        /// Attach a Port Pull-up/Pull-down register to this peripheral.
+        pupdr(offset: u32, reset: u32) {
+            self.add_register(Register::new("pupdr", offset).reset(reset))
         }
     }
+}
 
-    #[derive(Clone, Copy)]
-    pub struct Output {
-        pub floating: Entitlement,
-        pub pullup: Entitlement,
-        pub pulldown: Entitlement,
+field! {
+    /// Attach Pull-up/Pull-down fields to Port Pull-up/Pull-down registers.
+    Pupd<Store> {
+        /// Attach a Pull-up/Pull-down field to this register.
+        pupd(position: u8) {
+            self.add_store_field(Field::new_indexed(format!("pupd{position}"), position, 2))
+        }
+    }
+}
+
+/// A full Port Pull-up/Pull-down register. This means the register contains 16 Pull-up/Pull-down fields.
+pub type Full = [pupd::PupdSchema; 16];
+
+pub mod pupd {
+    use model_macros::schema;
+    use phm::Variant;
+
+    schema! {
+        /// Attach Pull-up/Pull-down schemas to Pull-up/Pull-down fields.
+        Pupd<Store> {
+            /// Pull-up/Pull-down.
+            ///
+            /// There are three pull-up/pull-down variants:
+            /// - Floating (no pull-up or pull-down)
+            /// - Pull Up
+            /// - Pull Down
+            pupd() {
+                #[entitlement]
+                floating: self.add_variant(Variant::new("Floating", 0)),
+                #[entitlement]
+                pullup: self.add_variant(Variant::new("PullUp", 1)),
+                #[entitlement]
+                pulldown: self.add_variant(Variant::new("PullDown", 2)),
+            }
+        }
     }
 }

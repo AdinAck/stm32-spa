@@ -5,7 +5,7 @@ use phm::{Composition, Peripheral};
 
 use crate::devices::g4::syscfg::exticr::exticr;
 
-pub fn syscfg(composition: &mut Composition, syscfgen: en::Output) {
+pub fn syscfg(composition: &mut Composition, syscfgen: en::EnSchema) {
     let mut syscfg = composition.add_peripheral(
         Peripheral::new("syscfg", 0x4001_0000).docs(["This peripheral is incomplete."]),
     );
