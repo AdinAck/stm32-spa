@@ -13,25 +13,40 @@ pub enum Device {
 }
 
 impl Device {
-    pub fn apply_to(&self, composition: &mut Composition) {
+    pub fn apply_to(&self, composition: &mut Composition, mode: Mode) {
         match self {
             Self::C0(variant) => {
-                cmpm::Device::M0.apply_to(composition);
+                if let Mode::Validation = mode {
+                    cmpm::Device::M0.apply_to(composition);
+                }
+
                 variant.apply_to(composition)
             }
             Self::G4(variant) => {
-                cmpm::Device::M4.apply_to(composition);
+                if let Mode::Validation = mode {
+                    cmpm::Device::M4.apply_to(composition);
+                }
+
                 variant.apply_to(composition)
             }
         }
     }
 }
 
-pub fn compose(device: Option<Device>) -> Composition {
+/// Model composition mode.
+#[derive(Debug, Clone, Copy)]
+pub enum Mode {
+    /// Compose the model for validation.
+    Validation,
+    /// Compose the model for production.
+    Production,
+}
+
+pub fn compose(device: Option<Device>, mode: Mode) -> Composition {
     let mut composition = Composition::default();
 
     if let Some(device) = device {
-        device.apply_to(&mut composition);
+        device.apply_to(&mut composition, mode);
     } else {
         composition.add_diagnostic(diagnostic::Rank::Error, "A device must be selected.");
     }

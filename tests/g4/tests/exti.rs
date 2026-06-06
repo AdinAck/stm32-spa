@@ -6,7 +6,7 @@ use panic_probe as _;
 
 use stm32_spa as hal;
 
-use hal::{exti, gpioa, interrupt, nvic, rcc};
+use hal::{cortex::nvic, exti, gpioa, interrupt, rcc};
 
 static mut FLAG: bool = false;
 
@@ -15,7 +15,7 @@ fn EXTI9_5() {
     unsafe { FLAG = true };
 
     assert!(
-        unsafe { hal::read_untracked!(nvic::iabr1::active23).is_active() },
+        unsafe { hal::cortex::read_untracked!(nvic::iabr1::active23).is_active() },
         "interrupt is currently active but not reported as such"
     );
 
@@ -102,12 +102,13 @@ mod tests {
 
     #[test]
     fn gpio_trigger_with_nvic() {
+        let cp = unsafe { hal::cortex::assume_reset() };
         let p = unsafe { hal::assume_reset() };
 
-        let mut nvic = p.nvic;
+        let mut nvic = cp.nvic;
 
         unsafe {
-            hal::write! {
+            hal::cortex::write! {
                 nvic::iser1::setena23(&mut nvic.iser1.setena23) => Enable,
             }
         };

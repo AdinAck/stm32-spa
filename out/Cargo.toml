@@ -7,11 +7,11 @@ rust-version = "1.95"
 [features]
 default = ["rt"]
 
-c092 = ["macros/c092"]
-g431 = ["macros/g431"]
-g441 = ["macros/g441"]
-g474 = ["macros/g474"]
-g484 = ["macros/g484"]
+c092 = ["macros/c092", "cortex-m-spa/m0"]
+g431 = ["macros/g431", "cortex-m-spa/m4"]
+g441 = ["macros/g441", "cortex-m-spa/m4"]
+g474 = ["macros/g474", "cortex-m-spa/m4"]
+g484 = ["macros/g484", "cortex-m-spa/m4"]
 
 rt = ["cortex-m-rt/device", "phb/interrupts"]
 
@@ -19,6 +19,7 @@ rt = ["cortex-m-rt/device", "phb/interrupts"]
 cortex-m-rt = { version = "0.7.3" }
 macros = { package = "stm32-spa-macros", path = "../macros" }
 proto-hal = { git = "https://github.com/adinack/proto-hal" }
+cortex-m-spa = { git = "https://github.com/adinack/cortex-m-spa" }
 
 [build-dependencies]
 model = { package = "stm32-spa-model", path = "../model" }

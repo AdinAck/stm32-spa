@@ -1,3 +1,4 @@
+use model::Mode;
 #[allow(unused)]
 use model::{
     Device, compose,
@@ -14,7 +15,7 @@ fn main() {
         _ => None,
     };
 
-    phb::render(&compose(device));
+    phb::render(&compose(device, Mode::Production));
 
     // prevent recompiling when tests change
     println!("cargo::rerun-if-changed=../model/src");
